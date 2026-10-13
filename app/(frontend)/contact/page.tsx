@@ -1,0 +1,8 @@
+import { getSiteChrome } from "@/lib/site-content";
+import { LeadForm } from "@/components/lead-form";
+export default async function Contact({searchParams}:{searchParams:Promise<{service?:string;intent?:string;country?:string}>}) {
+  const [chrome,query]=await Promise.all([getSiteChrome(),searchParams]);
+  const initialService=chrome.services.some(service=>service.slug===query.service)?query.service:"";
+  const initialCountry=["United States","United Kingdom","Australia","Germany"].includes(query.country || "")?query.country:"";
+  return <main className="section bg-slate-50"><div className="container grid gap-10 lg:grid-cols-[.75fr_1.25fr]"><div><p className="eyebrow">Let's discuss</p><h1 className="mt-4 text-5xl font-black">Tell us what your store needs.</h1><p className="mt-5 leading-7 text-slate-600">Share a consented inquiry for human follow-up. Never include passwords, card details, or secret credentials.</p>{chrome.contact.email&&<a href={"mailto:"+chrome.contact.email} className="mt-5 block font-bold text-blue-700">Email the team</a>}{query.intent==="meeting"&&<p className="mt-5 leading-7">{chrome.contact.bookingURL?<a href={chrome.contact.bookingURL} className="font-bold text-blue-700" target="_blank" rel="noreferrer">Open meeting booking</a>:"Online meeting booking has not been configured. You can request a meeting in your inquiry; no time is reserved automatically."}</p>}</div><div className="card p-7">{chrome.services.length?<LeadForm services={chrome.services.map(service=>({slug:service.slug,title:service.title}))} initialService={initialService} initialCountry={initialCountry}/>:<p>No services are currently published. Please use the business contact options to discuss your requirements.</p>}</div></div></main>;
+}

@@ -1,0 +1,1 @@
+export function LoginIntro(){return <div className="vertix-login-intro"><p className="vertix-login-kicker">Secure administration</p><h1>Welcome back</h1><p>Sign in to manage services, leads, knowledge, conversations, and website settings.</p></div>}

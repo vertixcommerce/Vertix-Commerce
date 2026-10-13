@@ -1,0 +1,1 @@
+export function LoginHelp(){return <div className="vertix-login-help"><span aria-hidden="true">🔒</span><p>Your session is protected and expires automatically. For account help, contact your Vertix Commerce owner.</p></div>}
