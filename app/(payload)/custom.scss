@@ -157,8 +157,8 @@ html[data-theme="dark"] .vertix-admin-logo { mix-blend-mode: normal; background:
 .template-minimal__wrap { width: min(100%, 480px) !important; background: var(--vx-surface); border: 1px solid var(--vx-line); border-radius: 20px; padding: 34px !important; box-shadow: 0 22px 70px rgba(6,26,58,.18); }
 .login__brand, .forgot-password__brand, .reset-password__brand { text-align: center; margin-bottom: 20px; }
 .vertix-admin-logo { display: block; width: 210px; max-width: 100%; height: 170px; object-fit: cover; object-position: center 55%; margin: 0 auto; mix-blend-mode: multiply; }
-.vertix-admin-icon { position: relative; display: block; width: 42px; height: 42px; overflow: hidden; border-radius: 10px; background: #fff; }
-.vertix-admin-icon img { position: absolute; width: 84px; max-width: none; height: 84px; left: -20px; top: -11px; }
+.vertix-admin-icon { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 42px; height: 100%; max-height: 42px; aspect-ratio: 1; overflow: hidden; border-radius: 8px; background: #fff; }
+.vertix-admin-icon img { position: static; display: block; width: 100%; height: 100%; max-width: 100%; object-fit: contain; padding: 2px; }
 .vertix-login-intro { text-align: center; margin: 0 auto 28px; max-width: 390px; }
 .vertix-login-kicker { margin: 0 0 8px; color: var(--vx-accent); font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
 .vertix-login-intro h1 { margin: 0; color: var(--vx-text); font-size: 31px; line-height: 1.2; letter-spacing: -.035em; }
@@ -206,3 +206,4 @@ html[data-theme="dark"] .vertix-admin-logo { mix-blend-mode: normal; background:
 .vx-settings-help h3 { margin: 0 0 12px; }
 .vx-settings-help p, .vx-settings-help li { line-height: 1.65; }
 .vx-settings-help a { color: var(--vx-accent); }
+

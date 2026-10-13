@@ -1,0 +1,11 @@
+import dotenv from "dotenv";
+import {spawn} from "node:child_process";
+import {randomBytes} from "node:crypto";
+import {existsSync,writeFileSync} from "node:fs";
+const {parsed:destination}=dotenv.config({path:".env.migration.local",quiet:true});
+if(!destination?.NEON_DATABASE_URL||!destination.PAYLOAD_SECRET)throw new Error("Private destination configuration missing");
+const file=".env.admin.local";
+if(!existsSync(file))writeFileSync(file,`CLIENT_OWNER_PASSWORD="${randomBytes(24).toString("base64url")}"\nCLIENT_ADMIN_PASSWORD="${randomBytes(24).toString("base64url")}"\n`);
+const {parsed:passwords}=dotenv.config({path:file,quiet:true});
+const child=spawn(process.execPath,["node_modules/payload/bin.js","create-client-admins"],{stdio:"inherit",env:{...process.env,...destination,...passwords,DATABASE_URL:destination.NEON_DATABASE_URL,NODE_ENV:"development",CLIENT_ADMIN_SETUP:"true",RESEND_API_KEY:"",GEMINI_API_KEY:""}});
+child.on("exit",code=>process.exitCode=code||0);
