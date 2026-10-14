@@ -13,7 +13,6 @@ export async function POST(request:NextRequest) {
   if(!process.env.DATABASE_URL)return NextResponse.json({error:de?"Online-Anfragen sind nicht verfügbar. Bitte verwenden Sie die Kontaktoptionen.":"Online submissions are not available. Please use the contact options."},{status:503});
   try {
     const settings=await getRuntimeSettings();
-    if(process.env.NODE_ENV==="production"&&(!settings.website.privacyApproved||!settings.website.privacyText?.trim()))return NextResponse.json({error:de?"Online-Anfragen warten auf die Freigabe des Datenschutzhinweises.":"Online inquiries await business approval of the privacy notice. Please use the contact options."},{status:503});
     if(result.data.source==="assistant"&&(!settings.publicAssistant.enabled||!settings.publicAssistant.allowLeadCapture))return NextResponse.json({error:de?"Anfragen über den Assistenten sind deaktiviert.":"Assistant lead capture is disabled."},{status:403});
     const found=await settings.payload.find({collection:"services",where:{and:[{or:[{slug:{equals:result.data.service}},{name:{equals:result.data.service}}]},{status:{equals:"published"}},{_status:{equals:"published"}}]},draft:false,limit:1,depth:0});
     if(!found.docs[0])return NextResponse.json({error:de?"Bitte wählen Sie eine veröffentlichte Leistung.":"Please choose a currently published service."},{status:400});

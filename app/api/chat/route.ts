@@ -16,7 +16,6 @@ export async function POST(request:NextRequest) {
   const fallback=locale==="de"?FALLBACK_DE:FALLBACK_EN;
   try {
     const settings=await getRuntimeSettings();
-    if(storeConversation&&process.env.NODE_ENV==="production"&&(!settings.website.privacyApproved||!settings.website.privacyText?.trim()))return NextResponse.json({error:locale==="de"?"Chat-Speicherung wartet auf die Freigabe des Datenschutzhinweises.":"Chat storage awaits business approval of the privacy notice. You can chat without storage."},{status:503});
     if(!settings.publicAssistant.enabled)return NextResponse.json({error:locale==="de"?"Der Assistent ist deaktiviert. Bitte verwenden Sie das Kontaktformular.":"The assistant is disabled. Please use the contact form."},{status:503});
     const session=visitorSession(request);
     const respond=async(answer:string,escalate=false,reason?:string)=>{

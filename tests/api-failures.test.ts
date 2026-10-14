@@ -165,6 +165,14 @@ describe("chat route failure handling", () => {
 });
 
 describe("lead route failure handling", () => {
+  it("accepts consented production inquiries without the removed legal-page approval gate", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    mocks.save.mockResolvedValue({id:43});
+    const response=await lead(request(validLead));
+    expect(response.status).toBe(200);
+    expect((await response.json()).accepted).toBe(true);
+    expect(mocks.save).toHaveBeenCalledOnce();
+  });
   it("handles storage failure without exposing internal details", async () => {
     mocks.save.mockRejectedValue(new Error("Private storage diagnostic"));
     const response = await lead(request(validLead));
