@@ -49,6 +49,16 @@ describe("public request boundaries", () => {
     expect(sameOrigin(request({ "sec-fetch-site": "cross-site" }))).toBe(false);
     expect(sameOrigin(request({ origin: "http://localhost:3000" }))).toBe(true);
   });
+  it("accepts the assigned Render origin behind its internal proxy, while rejecting other sites", () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "");
+    vi.stubEnv("RENDER_EXTERNAL_URL", "https://vertix-commerce.onrender.com");
+    const request = (origin: string) => new Request("http://localhost:10000/api/leads", {headers:{origin}});
+    expect(sameOrigin(request("https://vertix-commerce.onrender.com"))).toBe(true);
+    expect(sameOrigin(request("https://evil.example"))).toBe(false);
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://vertixcommerce.example");
+    expect(sameOrigin(request("https://vertixcommerce.example"))).toBe(true);
+    expect(sameOrigin(request("https://vertix-commerce.onrender.com"))).toBe(true);
+  });
   it("limits actual streamed bytes even without a content-length header", async () => {
     const req = new Request("http://localhost:3000/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ message: "x".repeat(1000) }) });
     await expect(boundedJSON(req, 100)).rejects.toThrow("Body too large");

@@ -9,7 +9,14 @@ export function clientKey(request: Request) {
 export function sameOrigin(request: Request) {
   const origin = request.headers.get("origin");
   if (!origin) return request.headers.get("sec-fetch-site") !== "cross-site";
-  try { return new URL(origin).origin === new URL(process.env.NEXT_PUBLIC_SITE_URL || request.url).origin; } catch { return false; }
+  try {
+    const submitted = new URL(origin).origin;
+    // Explicit configuration only: never trust Origin or forwarded Host to define the allowlist.
+    const configured = [process.env.NEXT_PUBLIC_SITE_URL, process.env.RENDER_EXTERNAL_URL].filter((value): value is string => Boolean(value?.trim()));
+    return (configured.length ? configured : [request.url]).some(value => {
+      try { const url = new URL(value); return ["http:", "https:"].includes(url.protocol) && !url.username && !url.password && url.origin === submitted; } catch { return false; }
+    });
+  } catch { return false; }
 }
 export async function publicGuard(request: Request, scope: string, limit = 12, windowMs = 60000) {
   if (!sameOrigin(request)) return NextResponse.json({ error: "Cross-site requests are not allowed." }, { status: 403 });
