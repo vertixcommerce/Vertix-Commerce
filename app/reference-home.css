@@ -154,8 +154,8 @@
 .reference-hero-centered .reference-checks, .reference-hero-centered .reference-buttons, .reference-hero-centered .reference-country-strip { justify-content: center; }
 .reference-hero-centered .reference-hero-art { max-width: 650px; width: 100%; margin-inline: auto; }
 .reference-image-left:not(.reference-hero-centered) .reference-hero-art { order: -1; }
-.commerce-header > .container { height: 72px; }
-.commerce-header > .container > a img { height: 58px; }
+.commerce-header > .commerce-header-bar { height: 72px; }
+.commerce-header > .commerce-header-bar > a img { height: 58px; }
 .commerce-header nav > div > button { font-size: 12px; }
 .commerce-header nav > a:not(.button) { font-size: 12px; }
 .commerce-footer { background: #02213a; color: #cfdeeb; padding: 31px 0 18px; }

@@ -9,7 +9,7 @@ import { safeURL } from "@/lib/public-config";
 export function Header({groups,servicesLabel,hasFAQs=false,aboutMenuLabel="About",extraLinks=[]}:{groups:ServiceGroup[];servicesLabel:string;hasFAQs?:boolean;aboutMenuLabel?:string;extraLinks?:{label:string;url:string}[]}){
   const [open,setOpen]=useState(false),[servicesOpen,setServicesOpen]=useState(false),[aboutOpen,setAboutOpen]=useState(false);
   return <header className="commerce-header sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
-    <div className="container flex h-20 items-center justify-between">
+    <div className="commerce-header-bar container flex h-20 items-center justify-between">
       <a href="/" aria-label="Vertix Commerce home" className="flex items-center"><Image src={logo} alt="Vertix Commerce" preload className="h-16 w-auto object-contain mix-blend-multiply" sizes="210px"/></a>
       <nav className="hidden items-center gap-7 md:flex">
         <a href="/" className="text-sm font-bold text-slate-600 hover:text-blue-600">Home</a>
