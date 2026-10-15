@@ -1,3 +1,4 @@
+vi.mock("next/cache", () => ({ unstable_cache: (load: () => Promise<unknown>) => load, revalidateTag: vi.fn() }));
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("payload", () => ({ getPayload: vi.fn() }));
 vi.mock("@payload-config", () => ({ default: {} }));

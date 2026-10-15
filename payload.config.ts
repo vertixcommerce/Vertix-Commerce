@@ -1,3 +1,4 @@
+import { withPublicCollectionCache, withPublicGlobalCache } from "./payload/public-content-hooks";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
 import { resendAdapter } from "@payloadcms/email-resend";
@@ -35,7 +36,7 @@ export default buildConfig({
       views:{dashboard:{Component:"/components/admin/DashboardWelcome#DashboardWelcome"}},
     },
   },
-  collections:[Users,ServiceCategories,Services,Countries,Knowledge,FAQs,Leads,Conversations,Media,Articles],
+  collections:[Users,...[ServiceCategories,Services,Countries,FAQs,Media,Articles].map(withPublicCollectionCache),Knowledge,Leads,Conversations],
   upload: { limits: { fileSize: 4 * 1024 * 1024 } },
   plugins: [s3Storage({
     enabled: Boolean(process.env.S3_BUCKET), alwaysInsertFields: true,
@@ -48,7 +49,7 @@ export default buildConfig({
       credentials: { accessKeyId: process.env.S3_ACCESS_KEY_ID || "", secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "" },
     },
   })],
-  globals:[WebsiteSettings,AssistantSettings,AboutPage],
+  globals:[WebsiteSettings,AssistantSettings,AboutPage].map(withPublicGlobalCache),
   editor:lexicalEditor(),
   ...(process.env.RESEND_API_KEY?{email:resendAdapter({defaultFromAddress:process.env.RESEND_FROM_EMAIL_ADDRESS||"notifications@vertixcommerce.com",defaultFromName:"Vertix Commerce",apiKey:process.env.RESEND_API_KEY})}:{}),
   secret:process.env.PAYLOAD_SECRET||"development-only-secret-change-before-production",

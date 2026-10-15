@@ -1,3 +1,4 @@
+import { readPublicContent } from "./public-content-cache";
 import { getPayload } from "payload";
 import { cache } from "react";
 import { connection } from "next/server";
@@ -36,11 +37,11 @@ function publicService(doc: Service): PublicService {
   };
 }
 export const getSiteChrome = cache(async (): Promise<SiteChrome> => {
-  // CMS queries run at request time so saved menu edits need no rebuild.
+  // Stay request-rendered; CMS results are shared across visitors until invalidated.
   await connection();
   const fallback = { ...defaultChrome, contact: { ...defaultChrome.contact, bookingURL: configuredBookingURL(undefined) } };
   if (!process.env.DATABASE_URL) return fallback;
-  try {
+  try { return await readPublicContent(["getSiteChrome"], async () => {
     const payload = await getPayload({ config });
     const [settings, categories, serviceResult, assistant, faqs, countries] = await Promise.all([
       payload.findGlobal({ slug: "website-settings", depth: 2 }),
@@ -74,12 +75,12 @@ export const getSiteChrome = cache(async (): Promise<SiteChrome> => {
       privacyText: settings.privacyText || "", privacyApproved: settings.privacyApproved === true,
       termsText: settings.termsText || "", termsApproved: settings.termsApproved === true,
     };
-  } catch { return fallback; }
+  }); } catch { return fallback; }
 });
 export const getPublicService = cache(async (slug: string): Promise<PublicService | undefined> => {
   await connection();
   if (!process.env.DATABASE_URL) return undefined;
-  try {
+  try { return await readPublicContent(["service", slug], async () => {
     const payload = await getPayload({ config });
     const result = await payload.find({
       collection: "services", where: { and: [{ slug: { equals: slug } }, { status: { equals: "published" } }, { _status: { equals: "published" } }] },
@@ -87,18 +88,18 @@ export const getPublicService = cache(async (slug: string): Promise<PublicServic
     });
     const doc = result.docs[0];
     return doc && doc.status === "published" && doc._status === "published" ? publicService(doc) : undefined;
-  } catch { return undefined; }
+  }); } catch { return undefined; }
 });
 export const getPublicCountry = cache(async (slug: string) => {
   await connection();
   if (!process.env.DATABASE_URL) return undefined;
-  try {
+  try { return await readPublicContent(["country", slug], async () => {
     const payload = await getPayload({ config });
     const result = await payload.find({ collection: "countries", where: { and: [{ slug: { equals: slug } }, { status: { equals: "published" } }, { _status: { equals: "published" } }] }, draft: false, limit: 1, depth: 1 });
     const country = result.docs[0];
     if (!country || country.status !== "published" || country._status !== "published") return undefined;
     const services = await payload.find({ collection: "services", where: { and: [{ countryAvailability: { contains: slug } }, { status: { equals: "published" } }, { _status: { equals: "published" } }] }, draft: false, sort: "displayOrder", pagination: false, depth: 1 });
     return { ...country, ctaURL: safeURL(country.ctaURL, true) || "/contact", services: services.docs.map(publicService) };
-  } catch { return undefined; }
+  }); } catch { return undefined; }
 });
 
