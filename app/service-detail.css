@@ -7,7 +7,6 @@
 .service-offering-card h3{font-size:1.12rem;line-height:1.45;max-width:28ch}
 .service-offering-card p{font-size:.95rem;line-height:1.85;margin-top:16px}
 .service-offering-card ul{width:100%;text-align:left;border-top:1px solid #e8eef5;padding-top:20px;margin-bottom:24px}
-.service-offering-card .service-text-link{margin-top:auto;padding-top:22px}
 .service-offering-card:focus-within{box-shadow:0 8px 26px #071a381c;border-top-color:#004a94}
 @media(hover:hover){.service-offering-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px #071a3818}}
 @media(prefers-reduced-motion:reduce){.service-offering-card{transition:none}.service-offering-card:hover{transform:none}}
