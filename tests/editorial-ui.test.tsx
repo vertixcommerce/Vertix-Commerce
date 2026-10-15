@@ -41,25 +41,30 @@ describe("About, Blogs and social UI", () => {
   it("does not invent profile links for an empty CMS configuration", () => {
     const { container } = render(<SocialLinks links={[]}/>); expect(container.innerHTML).toBe("");
   });
-  it("opens the About submenu on hover and mobile tap with both page links", () => {
-    render(<Header groups={[]} servicesLabel="Services"/>);
-    expect(screen.queryByRole("link", { name: /^Blog$/ })).toBeNull();
-    const aboutButton = screen.getByRole("button", { name: "About" });
-    fireEvent.mouseEnter(aboutButton.parentElement!);
-    expect(aboutButton.getAttribute("aria-expanded")).toBe("true");
-    fireEvent.click(aboutButton, { detail: 1 });
-    expect(aboutButton.getAttribute("aria-expanded")).toBe("true");
-    expect(screen.getByRole("link", { name: /About Vertix/ }).getAttribute("href")).toBe("/about");
-    expect(screen.getByRole("link", { name: /Blogs/ }).getAttribute("href")).toBe("/blogs");
-    fireEvent.keyDown(aboutButton, { key: "Escape" }); expect(aboutButton.getAttribute("aria-expanded")).toBe("false");
+  it("shows direct About and Blogs links on desktop and mobile without a dropdown", () => {
+    const { container } = render(<Header groups={[]} servicesLabel="Services" aboutMenuLabel="About us"/>);
+    expect(screen.getByRole("link", { name: "About us" }).getAttribute("href")).toBe("/about");
+    expect(screen.getByRole("link", { name: "Blogs" }).getAttribute("href")).toBe("/blogs");
+    expect(screen.queryByRole("button", { name: "About us" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Open navigation" }));
-    fireEvent.click(screen.getAllByRole("button", { name: "About" })[1]);
-    expect(screen.getAllByRole("link", { name: /About Vertix/ })).toHaveLength(2);
-    expect(screen.queryByRole("link", { name: /^Blog$/ })).toBeNull();
+    const mobile = container.querySelector(".commerce-mobile-nav")!;
+    expect(mobile.querySelector('a[href="/about"]')?.textContent).toBe("About us");
+    expect(mobile.querySelector('a[href="/blogs"]')?.textContent).toBe("Blogs");
+    fireEvent.click(mobile.querySelector('a[href="/blogs"]')!);
+    expect(container.querySelector(".commerce-mobile-nav")).toBeNull();
   });
 });
 
 describe("Services navigation accessibility",()=>{
+  it("keeps a working Services link on desktop and mobile when CMS menus are empty",()=>{
+    const { container } = render(<Header groups={[]} servicesLabel="Services"/>);
+    expect(screen.getByRole("link",{name:"Services"}).getAttribute("href")).toBe("/services");
+    fireEvent.click(screen.getByRole("button",{name:"Open navigation"}));
+    const link=container.querySelector('.commerce-mobile-nav a[href="/services"]')!;
+    expect(link.textContent).toBe("Services");
+    fireEvent.click(link);
+    expect(container.querySelector(".commerce-mobile-nav")).toBeNull();
+  });
   it("opens by keyboard and closes with Escape, keeping focus on its trigger",()=>{
     render(<Header groups={[{name:"Commerce",slug:"commerce",services:[{slug:"example-service",title:"Example service",text:"Scope",category:"Commerce",categorySlug:"commerce"}]}]} servicesLabel="Services"/>);
     const trigger=screen.getByRole("button",{name:"Services"});

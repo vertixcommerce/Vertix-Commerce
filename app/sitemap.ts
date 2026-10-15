@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const origin = process.env.NEXT_PUBLIC_SITE_URL;
   if (!origin || !/^https?:\/\//.test(origin)) return [];
   const base = origin.replace(/\/$/, "");
-  const routes: MetadataRoute.Sitemap = ["", "/about", "/blogs", "/contact", "/meeting"].map(path => ({url:base+path}));
+  const routes: MetadataRoute.Sitemap = ["", "/services", "/about", "/blogs", "/contact", "/meeting"].map(path => ({url:base+path}));
   if (!process.env.DATABASE_URL) return routes;
   return readPublicContent(["sitemap", base], async () => {
   const payload = await getPayload({config});
