@@ -1,0 +1,25 @@
+# Local credentials and private migration/admin files
+.env
+.env.*
+.dev.vars*
+*.pem
+*.key
+backups/
+artifacts/
+outputs/
+media/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+# Rebuilt by Vercel
+node_modules/
+.next/
+.next-*/
+.open-next/
+.wrangler/
+.cloudflare-dry-run/
+*.tsbuildinfo
+.vercel/

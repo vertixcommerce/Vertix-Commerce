@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { administrator, leadTeam } from "../access";
-import { notifyLead } from "../../lib/lead-notifications";
+import { scheduleLeadNotification } from "../../lib/schedule-lead-notification";
 export const Leads: CollectionConfig = {
   slug: "leads", labels: { singular: "Inquiry", plural: "Customer inquiries" },
   admin: { useAsTitle: "name", group: "Customers", description: "Review an inquiry, add internal notes, and update its follow-up status.", defaultColumns: ["name", "email", "country", "service", "leadStatus", "createdAt"], listSearchableFields: ["name", "email", "service"], hideAPIURL: true },
@@ -38,7 +38,7 @@ export const Leads: CollectionConfig = {
     return data;
   }], afterChange: [async ({ doc, previousDoc, operation, req, context }) => {
     if (!context.notificationUpdate && doc.consent && doc.notificationStatus !== "sent" && (operation === "create" || doc.leadStatus === "qualified" && previousDoc?.leadStatus !== "qualified")) {
-      doc.notificationStatus = await notifyLead(req.payload, doc, req);
+      await scheduleLeadNotification(req.payload, doc, req);
     }
     return doc;
   }] },

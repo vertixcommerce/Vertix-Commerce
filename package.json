@@ -18,7 +18,8 @@
     "admin:bootstrap": "payload bootstrap-admin",
     "services:import": "payload import-service-catalogue",
     "db:migration:create": "payload migrate:create",
-    "db:migrate": "payload migrate"
+    "db:migrate": "payload migrate",
+    "postinstall": "node scripts/apply-dependency-security-patches.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -56,6 +57,11 @@
   "overrides": {
     "undici": "^7.29.1",
     "tinypool": "^2.1.2",
-    "dompurify": "^3.4.17"
+    "dompurify": "^3.4.17",
+    "sass": "^1.105.1",
+    "postcss-selector-parser": "^7.1.6",
+    "@esbuild-kit/core-utils": {
+      "esbuild": "^0.25.12"
+    }
   }
 }
