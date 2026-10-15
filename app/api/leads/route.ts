@@ -14,9 +14,13 @@ export async function POST(request:NextRequest) {
   try {
     const settings=await getRuntimeSettings();
     if(result.data.source==="assistant"&&(!settings.publicAssistant.enabled||!settings.publicAssistant.allowLeadCapture))return NextResponse.json({error:de?"Anfragen über den Assistenten sind deaktiviert.":"Assistant lead capture is disabled."},{status:403});
+    let serviceName="Other";
+    if(result.data.service!=="other") {
     const found=await settings.payload.find({collection:"services",where:{and:[{or:[{slug:{equals:result.data.service}},{name:{equals:result.data.service}}]},{status:{equals:"published"}},{_status:{equals:"published"}}]},draft:false,limit:1,depth:0});
     if(!found.docs[0])return NextResponse.json({error:de?"Bitte wählen Sie eine veröffentlichte Leistung.":"Please choose a currently published service."},{status:400});
-    const saved=await saveLead({...result.data,service:found.docs[0].name});
+    serviceName=found.docs[0].name;
+    }
+    const saved=await saveLead({...result.data,service:serviceName});
     return NextResponse.json({accepted:true,id:saved.id});
   }catch{return NextResponse.json({error:de?"Ihre Anfrage konnte nicht sicher gespeichert werden. Bitte versuchen Sie es erneut.":"We could not securely save your inquiry. Please try again or use the contact options."},{status:503})}
 }

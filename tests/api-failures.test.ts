@@ -208,3 +208,6 @@ describe("lead route failure handling", () => {
     expect(JSON.stringify(await response.json())).not.toContain(validLead.email);
   });
 });
+
+
+it("accepts an Other service inquiry without requiring a published service record",async()=>{mocks.find.mockResolvedValue({docs:[]});mocks.save.mockResolvedValue({id:44});const response=await lead(request({...validLead,service:"other"}));expect(response.status).toBe(200);expect(mocks.find).not.toHaveBeenCalled();expect(mocks.save.mock.calls[0][0].service).toBe("Other");});
