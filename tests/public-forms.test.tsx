@@ -51,12 +51,12 @@ describe("assistant GUI", () => {
     expect(link.className).toContain("bg-[#075e54]");
     expect(screen.queryByRole("button",{name:"Ask Vertix"})).toBeNull();
   });
-  it("separates left email and right WhatsApp and AI launchers", () => {
+  it("stacks email, WhatsApp and AI launchers together on the right", () => {
     render(<ContactDock config={{...defaultAssistant,enabled:true}} contact={{email:"qa@example.invalid",whatsapp:"12025550100",bookingURL:""}}/>);
     const whatsapp = screen.getByRole("link",{name:"Message Vertix Commerce on WhatsApp"});
     const row = whatsapp.parentElement;
-    expect(screen.getByRole("link",{name:"Email Vertix Commerce"}).parentElement).not.toBe(row);
-    expect(screen.getByRole("link",{name:"Email Vertix Commerce"}).className).toContain("left-3");
+    expect(screen.getByRole("link",{name:"Email Vertix Commerce"}).parentElement).toBe(row);
+    expect(screen.getByRole("link",{name:"Email Vertix Commerce"}).getAttribute("href")).toBe("mailto:qa@example.invalid?subject=Vertix%20Commerce%20inquiry");
     expect(screen.getByRole("button",{name:"Ask Vertix"}).parentElement).toBe(row);
     expect(row?.className).toContain("flex flex-col items-end gap-3");
   });
