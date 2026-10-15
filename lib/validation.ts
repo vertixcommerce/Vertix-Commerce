@@ -4,7 +4,7 @@ export const leadSchema=z.object({
   name:z.string().trim().min(2).max(100),
   email:z.string().email().max(180),
   whatsapp:z.string().trim().min(7).max(30),
-  country:z.enum(["United States","United Kingdom","Australia","Germany"]),
+  country:z.enum(["United States","United Kingdom","Australia","Germany","Other"]),
   service:z.string().trim().min(2).max(120),
   requirements:z.string().trim().min(10).max(3000),
   consent:z.literal(true),
