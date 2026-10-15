@@ -279,3 +279,6 @@
 .reference-home-compact .reference-discuss .reference-buttons .button{font-size:12px;padding:11px 16px;background:transparent}
 @media(max-width:640px){.reference-home-compact .reference-hero{padding:36px 0}.reference-home-compact .reference-section{padding:36px 0}.reference-home-compact .reference-hero-copy h1{font-size:35px}.reference-service-grid-single .reference-service-card{grid-template-columns:1fr;gap:28px;padding:24px}.reference-service-scope{border-left:0;border-top:1px solid #dce7f4;padding-left:0;padding-top:24px}.reference-home-compact .reference-why-grid{gap:26px}.reference-home-compact .reference-discuss{padding:40px 0}}
 .reference-home-compact section[id],.reference-home-compact #faqs{scroll-margin-top:100px}
+
+/* Keep mobile navigation page names consistent, including service links. */
+.commerce-header .commerce-mobile-nav :is(a:not(.button), button) { font-size: 14px; font-weight: 400; }
