@@ -36,11 +36,10 @@ describe("Calendly Free booking", () => {
     fireEvent.load(screen.getByTitle("Book a meeting with Vertix through Calendly"));
     expect(screen.queryByRole("status")).toBeNull();
   });
-  it("keeps external fallback available for failed or blocked embeds", () => {
+  it("keeps contact help without a direct Calendly link", () => {
     render(<MeetingBooking bookingURL={event}/>);
-    const link = screen.getByRole("link", {name:/Open Calendly directly/});
-    expect(link.getAttribute("href")).toBe(event);
-    expect(link.getAttribute("target")).toBe("_blank");
+    expect(screen.queryByRole("link", {name:/Open Calendly directly/})).toBeNull();
+    expect(screen.getByRole("link", {name:"Contact our team"}).getAttribute("href")).toBe("/contact?intent=meeting");
     expect(screen.getByRole("status").textContent).toContain("Loading available meeting times");
   });
   it("shows an honest missing-configuration fallback without an iframe", () => {

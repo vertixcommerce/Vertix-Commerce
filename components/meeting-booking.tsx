@@ -24,13 +24,11 @@ export function MeetingBooking({ bookingURL }: { bookingURL: string }) {
   return <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white" aria-label="Meeting scheduling calendar">
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-6 py-4 text-sm">
       <p className="text-slate-600">Choose a time that works for you.</p>
-      <a href={eventURL} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer" className="inline-flex items-center gap-2 font-semibold text-blue-700 underline">Open Calendly directly<ArrowRight size={15}/><span className="sr-only"> (opens in a new tab)</span></a>
     </div>
     <div className="relative bg-white" style={{height:820}}>
       {loadedURL !== eventURL && <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-slate-50 text-center" role="status" aria-live="polite">
         <CalendarDays size={36} className="text-blue-700" aria-hidden="true"/>
         <p className="px-6 text-sm font-medium text-slate-600">Loading available meeting times…</p>
-        <p className="max-w-sm px-6 text-xs leading-6 text-slate-500">Taking longer than expected? Use the direct Calendly link above.</p>
       </div>}
       <iframe key={eventURL} src={eventURL} loading="eager" title="Book a meeting with Vertix through Calendly" className="block h-full w-full border-0 bg-white" referrerPolicy="no-referrer" onLoad={() => setLoadedURL(eventURL)}/>
     </div>
