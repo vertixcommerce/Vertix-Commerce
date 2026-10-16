@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/page-metadata";
 import { getSiteChrome } from "@/lib/site-content";
 import { MeetingBooking } from "@/components/meeting-booking";
 
-export const metadata: Metadata = { title: "Schedule a meeting", description: "Choose a meeting time to discuss your commerce requirements with Vertix." };
+export const metadata = pageMetadata("Schedule a Meeting", "Book a meeting with Vertix Commerce to discuss your store, marketplace priorities and support needs. Choose an available time in your timezone.", "/meeting");
 export default async function MeetingPage() {
   const chrome = await getSiteChrome();
   return <main className="section bg-blue-50"><div className="container max-w-5xl">
