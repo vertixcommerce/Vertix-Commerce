@@ -1,14 +1,25 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { preconnect } from "react-dom";
 import { ArrowRight, CalendarDays } from "lucide-react";
-import { calendlyEventURL } from "@/lib/booking";
+import { calendlyEmbedURL, calendlyEventURL } from "@/lib/booking";
 import { safeURL } from "@/lib/public-config";
 
 export function MeetingBooking({ bookingURL }: { bookingURL: string }) {
   const [loadedURL, setLoadedURL] = useState("");
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const eventURL = calendlyEventURL(bookingURL);
   const external = eventURL || safeURL(bookingURL);
+  const embedURL = calendlyEmbedURL(bookingURL, process.env.NEXT_PUBLIC_SITE_URL);
+  useEffect(() => {
+    if (!eventURL) return;
+    function ready(event: MessageEvent) {
+      if (event.origin !== "https://calendly.com" || event.source !== iframeRef.current?.contentWindow) return;
+      if (event.data?.event === "calendly.event_type_viewed") setLoadedURL(eventURL);
+    }
+    window.addEventListener("message", ready);
+    return () => window.removeEventListener("message", ready);
+  }, [eventURL]);
   if (!external) return <section className="card p-6 md:p-9" aria-labelledby="booking-heading">
     <CalendarDays size={32} className="text-blue-700" aria-hidden="true"/>
     <h2 id="booking-heading" className="mb-4 mt-4 text-2xl font-black">Request a meeting</h2>
@@ -30,7 +41,7 @@ export function MeetingBooking({ bookingURL }: { bookingURL: string }) {
         <CalendarDays size={36} className="text-blue-700" aria-hidden="true"/>
         <p className="px-6 text-sm font-medium text-slate-600">Loading available meeting times…</p>
       </div>}
-      <iframe key={eventURL} src={eventURL} loading="eager" title="Book a meeting with Vertix through Calendly" className="block h-full w-full border-0 bg-white" referrerPolicy="no-referrer" onLoad={() => setLoadedURL(eventURL)}/>
+      <iframe key={eventURL} ref={iframeRef} src={embedURL} loading="eager" title="Book a meeting with Vertix through Calendly" className="block h-full w-full border-0 bg-white" referrerPolicy="no-referrer" onLoad={() => setLoadedURL(eventURL)}/>
     </div>
     <div className="border-t border-slate-100 px-6 py-4 text-xs leading-6 text-slate-500">
       <p>Need help booking? <a href="/contact?intent=meeting" className="text-blue-700 underline">Contact our team</a>.</p>

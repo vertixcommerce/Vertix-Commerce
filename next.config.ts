@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: { serverActions: { bodySizeLimit: "1mb" } },
   async headers() {
-    return [{
+    return [{ source: "/api/:path((?!media/file/).*)", headers: [{ key: "Cache-Control", value: "private, no-store" }] }, {
       source: "/(.*)",
       headers: [
         { key: "X-Content-Type-Options", value: "nosniff" },

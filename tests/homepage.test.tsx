@@ -65,3 +65,6 @@ describe("manual homepage builder", () => {
     expect(() => Media.hooks!.beforeOperation![0]({ operation: "create", req: { file: { size: 5 * 1024 * 1024 } } } as never)).toThrow("4 MB");
   });
 });
+
+
+it("changes every responsive media URL when an image is updated",()=>{const first=publicImage({...image,updatedAt:"2026-10-16T10:00:00Z"})!;const next=publicImage({...image,updatedAt:"2026-10-16T11:00:00Z"})!;expect(first.src).not.toBe(next.src);expect(first.srcSet).not.toBe(next.srcSet);expect(next.srcSet.split(", ").every(item=>item.includes("?v="))).toBe(true);});

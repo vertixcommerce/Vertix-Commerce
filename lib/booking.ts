@@ -19,3 +19,14 @@ export function configuredBookingURL(cmsURL: unknown, env: Partial<NodeJS.Proces
 export function meetingHref(value: unknown): string {
   return calendlyEventURL(value) ? "/meeting" : safeURL(value, true) || "/contact?intent=meeting";
 }
+
+/** Match Calendly’s inline widget parameters without downloading its extra loader script. */
+export function calendlyEmbedURL(value: unknown, siteURL: unknown): string {
+  const event = calendlyEventURL(value);
+  if (!event) return "";
+  const url = new URL(event);
+  const site = safeURL(siteURL);
+  if (site) url.searchParams.set("embed_domain", new URL(site).hostname);
+  url.searchParams.set("embed_type", "Inline");
+  return url.toString();
+}

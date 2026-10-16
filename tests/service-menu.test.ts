@@ -25,7 +25,7 @@ describe("CMS-controlled services menu", () => {
     expect(result.servicesLabel).toBe("Our expertise");
     expect(result.groups[0].name).toBe("My services");
     expect(result.groups[0].services[0].title).toBe("My service");
-    expect(connection).toHaveBeenCalled();
+    expect(connection).not.toHaveBeenCalled();
   });
   it("does not restore hard-coded links when the library is empty", async () => {
     cms.find.mockResolvedValue({ docs: [] });

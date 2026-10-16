@@ -14,3 +14,6 @@ export default async function ServicePage({params}:{params:Promise<{slug:string}
   return <ServiceDetail service={service} contact={chrome.contact}/>;
 }
 
+
+// Generate public pages on first visit and keep them until CMS invalidation or timed refresh.
+export async function generateStaticParams() { return []; }

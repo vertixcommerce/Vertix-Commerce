@@ -28,7 +28,7 @@ it("shares public reads with a bounded lifetime and an invalidation tag", async 
   const load = vi.fn(async () => ({ title: "Public content" }));
   await readPublicContent(["example"], load); await readPublicContent(["example"], load);
   expect(load).toHaveBeenCalledTimes(1);
-  expect(unstable_cache).toHaveBeenCalledWith(load, [PUBLIC_CONTENT_TAG, "example"], { tags: [PUBLIC_CONTENT_TAG], revalidate: 300 });
+  expect(unstable_cache).toHaveBeenCalledWith(load, [PUBLIC_CONTENT_TAG, "example"], { tags: [PUBLIC_CONTENT_TAG], revalidate: 3600 });
 });
 it("keeps different article slugs and listing pages separate", async () => {
   state.cms.find.mockImplementation(async (query) => query.collection === "articles" && query.page

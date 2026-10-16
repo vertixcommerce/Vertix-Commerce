@@ -29,7 +29,7 @@ describe("Calendly Free booking", () => {
     const {container} = render(<MeetingBooking bookingURL={event}/>);
     expect(container.querySelector("iframe")).toBeTruthy();
     expect(screen.queryByRole("button", {name:"Load Calendly scheduler"})).toBeNull();
-    expect(screen.getByTitle("Book a meeting with Vertix through Calendly").getAttribute("src")).toBe(event);
+    expect(screen.getByTitle("Book a meeting with Vertix through Calendly").getAttribute("src")).toContain(event + "?");
     expect(container.textContent).not.toContain("Meeting confirmed!");
     expect(screen.getByTitle("Book a meeting with Vertix through Calendly").getAttribute("loading")).toBe("eager");
     expect(container.querySelector("iframe")?.parentElement?.style.height).toBe("820px");
@@ -57,3 +57,6 @@ describe("Calendly Free booking", () => {
 });
 
 
+
+
+it("does not accept scheduler readiness messages from other origins or windows",()=>{render(<MeetingBooking bookingURL={event}/>);fireEvent(window,new MessageEvent("message",{origin:"https://evil.invalid",data:{event:"calendly.event_type_viewed"}}));expect(screen.getByRole("status")).toBeTruthy();fireEvent(window,new MessageEvent("message",{origin:"https://calendly.com",source:window,data:{event:"calendly.event_type_viewed"}}));expect(screen.getByRole("status")).toBeTruthy();});

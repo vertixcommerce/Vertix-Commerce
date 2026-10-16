@@ -7,6 +7,10 @@ export const Media: CollectionConfig = {
   admin: { group: "Website content", useAsTitle: "alt", defaultColumns: ["filename", "alt", "updatedAt"], description: "Public website images only. Do not upload customer documents or personal information. JPEG, PNG, WebP and AVIF up to 4 MB." },
   access: { read: () => true, create: contentEditor, update: contentEditor, delete: contentEditor },
   upload: {
+    modifyResponseHeaders: ({ headers }) => {
+      headers.set("Cache-Control", "public, max-age=300, s-maxage=3600, stale-while-revalidate=60");
+      return headers;
+    },
     staticDir: path.resolve(process.cwd(), "media"),
     mimeTypes: ["image/jpeg", "image/png", "image/webp", "image/avif"],
     adminThumbnail: "mobile", focalPoint: true,

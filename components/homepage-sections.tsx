@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowRight, BarChart3, Globe2, Search, Store } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { SiteChrome } from "@/lib/site-content";
@@ -14,7 +15,7 @@ function Buttons({ buttons }: { buttons?: Button[] | null }) {
   return <div className="mt-8 flex flex-wrap gap-3">{(buttons || []).flatMap((button, i) => {
     const safe = safeURL(button.url, true);
     const href = safe ? meetingHref(safe) : "";
-    return href && button.label ? [<a key={i} href={href} className={"button " + (i === 0 ? "button-primary" : "button-secondary")}>{button.label}<ArrowRight size={18}/></a>] : [];
+    return href && button.label ? [<Link prefetch={false} key={i} href={href} className={"button " + (i === 0 ? "button-primary" : "button-secondary")}>{button.label}<ArrowRight size={18}/></Link>] : [];
   })}</div>;
 }
 export function ResponsiveCMSImage({ settings, hero = false, sizes = "(min-width: 1024px) 45vw, 100vw" }: { settings: ImageSettings; hero?: boolean; sizes?: string }) {
@@ -62,14 +63,14 @@ function SectionContent({ section, chrome }: { section: HomepageSection; chrome:
   switch (section.blockType) {
     case "services": {
       const services = section.serviceSource === "all" ? chrome.services : chrome.featuredServices;
-      return <div className="mt-9 grid gap-5 md:grid-cols-2">{services.map(service => <article key={service.slug} className="card bg-white p-7 text-slate-950 transition hover:-translate-y-1 hover:border-blue-300"><p className="text-xs font-bold uppercase tracking-wide text-blue-600">{service.category}</p><h3 className="mt-3 text-2xl font-black">{service.title}</h3><p className="mt-3 leading-7 text-slate-600">{service.text}</p><a href={"/services/" + service.slug} className="mt-6 inline-flex items-center gap-2 font-bold text-blue-600">Explore service<ArrowRight size={18}/></a></article>)}</div>;
+      return <div className="mt-9 grid gap-5 md:grid-cols-2">{services.map(service => <article key={service.slug} className="card bg-white p-7 text-slate-950 transition hover:-translate-y-1 hover:border-blue-300"><p className="text-xs font-bold uppercase tracking-wide text-blue-600">{service.category}</p><h3 className="mt-3 text-2xl font-black">{service.title}</h3><p className="mt-3 leading-7 text-slate-600">{service.text}</p><Link prefetch={false} href={"/services/" + service.slug} className="mt-6 inline-flex items-center gap-2 font-bold text-blue-600">Explore service<ArrowRight size={18}/></Link></article>)}</div>;
     }
     case "text": return <div className="mt-6 max-w-4xl"><RichContent data={section.body}/></div>;
     case "imageText": return <div className="mt-8 grid items-center gap-9 lg:grid-cols-2"><div><RichContent data={section.body}/><Buttons buttons={section.buttons}/></div><div className={section.imageSide === "left" ? "lg:order-first" : ""}><ResponsiveCMSImage settings={section}/></div></div>;
-    case "features": return <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{(section.cards || []).map((card, i) => <article key={card.id || i} className="card bg-white p-7 text-slate-950"><h3 className="text-xl font-bold">{card.title}</h3><p className="mt-3 whitespace-pre-line leading-7 text-slate-600">{card.description}</p>{safeURL(card.url, true) && <a href={safeURL(card.url, true)} className="mt-5 inline-flex items-center gap-2 font-bold text-blue-700">Learn more<ArrowRight size={16}/></a>}</article>)}</div>;
+    case "features": return <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{(section.cards || []).map((card, i) => <article key={card.id || i} className="card bg-white p-7 text-slate-950"><h3 className="text-xl font-bold">{card.title}</h3><p className="mt-3 whitespace-pre-line leading-7 text-slate-600">{card.description}</p>{safeURL(card.url, true) && <Link prefetch={false} href={safeURL(card.url, true)} className="mt-5 inline-flex items-center gap-2 font-bold text-blue-700">Learn more<ArrowRight size={16}/></Link>}</article>)}</div>;
     case "gallery": return <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{(section.images || []).map((item, i) => <figure key={item.id || i}><ResponsiveCMSImage settings={{ image: item.image, imageFit: "cover", imageRatio: "square", mobileImageRatio: "square" }} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"/>{item.caption && <figcaption className="mt-3 text-sm">{item.caption}</figcaption>}</figure>)}</div>;
     case "faqs": return <div className="mt-8 space-y-3">{chrome.faqs.map((faq, i) => <details key={i} className="card bg-white p-6 text-slate-950"><summary className="cursor-pointer font-bold">{faq.question}</summary><p className="mt-4 whitespace-pre-line leading-7 text-slate-600">{faq.answer}</p></details>)}</div>;
-    case "markets": return <div className="mt-8 grid gap-5 sm:grid-cols-2">{chrome.countries.map(country => <a className="card bg-white p-6 text-slate-950" key={country.slug} href={"/contact?country=" + encodeURIComponent(country.name)}><Globe2 className="text-blue-600"/><h3 className="mt-4 text-xl font-bold">{country.name}</h3><p className="mt-2 text-slate-600">{country.introduction}</p></a>)}</div>;
+    case "markets": return <div className="mt-8 grid gap-5 sm:grid-cols-2">{chrome.countries.map(country => <Link prefetch={false} className="card bg-white p-6 text-slate-950" key={country.slug} href={"/contact?country=" + encodeURIComponent(country.name)}><Globe2 className="text-blue-600"/><h3 className="mt-4 text-xl font-bold">{country.name}</h3><p className="mt-2 text-slate-600">{country.introduction}</p></Link>)}</div>;
     case "cta": return <><p className="mt-5 max-w-3xl whitespace-pre-line leading-8">{section.description}</p><Buttons buttons={section.buttons}/></>;
   }
 }

@@ -37,10 +37,8 @@ function publicService(doc: Service): PublicService {
   };
 }
 export const getSiteChrome = cache(async (): Promise<SiteChrome> => {
-  // Stay request-rendered; CMS results are shared across visitors until invalidated.
-  await connection();
   const fallback = { ...defaultChrome, contact: { ...defaultChrome.contact, bookingURL: configuredBookingURL(undefined) } };
-  if (!process.env.DATABASE_URL) return fallback;
+  if (!process.env.DATABASE_URL) { await connection(); return fallback; }
   try { return await readPublicContent(["getSiteChrome"], async () => {
     const payload = await getPayload({ config });
     const [settings, categories, serviceResult, assistant, faqs, countries] = await Promise.all([
@@ -75,11 +73,10 @@ export const getSiteChrome = cache(async (): Promise<SiteChrome> => {
       privacyText: settings.privacyText || "", privacyApproved: settings.privacyApproved === true,
       termsText: settings.termsText || "", termsApproved: settings.termsApproved === true,
     };
-  }); } catch { return fallback; }
+  }); } catch { await connection(); return fallback; }
 });
 export const getPublicService = cache(async (slug: string): Promise<PublicService | undefined> => {
-  await connection();
-  if (!process.env.DATABASE_URL) return undefined;
+  if (!process.env.DATABASE_URL) { await connection(); return undefined; }
   try { return await readPublicContent(["service", slug], async () => {
     const payload = await getPayload({ config });
     const result = await payload.find({
@@ -88,11 +85,10 @@ export const getPublicService = cache(async (slug: string): Promise<PublicServic
     });
     const doc = result.docs[0];
     return doc && doc.status === "published" && doc._status === "published" ? publicService(doc) : undefined;
-  }); } catch { return undefined; }
+  }); } catch { await connection(); return undefined; }
 });
 export const getPublicCountry = cache(async (slug: string) => {
-  await connection();
-  if (!process.env.DATABASE_URL) return undefined;
+  if (!process.env.DATABASE_URL) { await connection(); return undefined; }
   try { return await readPublicContent(["country", slug], async () => {
     const payload = await getPayload({ config });
     const result = await payload.find({ collection: "countries", where: { and: [{ slug: { equals: slug } }, { status: { equals: "published" } }, { _status: { equals: "published" } }] }, draft: false, limit: 1, depth: 1 });
@@ -100,6 +96,6 @@ export const getPublicCountry = cache(async (slug: string) => {
     if (!country || country.status !== "published" || country._status !== "published") return undefined;
     const services = await payload.find({ collection: "services", where: { and: [{ countryAvailability: { contains: slug } }, { status: { equals: "published" } }, { _status: { equals: "published" } }] }, draft: false, sort: "displayOrder", pagination: false, depth: 1 });
     return { ...country, ctaURL: safeURL(country.ctaURL, true) || "/contact", services: services.docs.map(publicService) };
-  }); } catch { return undefined; }
+  }); } catch { await connection(); return undefined; }
 });
 

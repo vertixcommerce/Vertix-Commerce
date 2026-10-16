@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getSiteChrome } from "@/lib/site-content";
 import { pageMetadata } from "@/lib/page-metadata";
 
@@ -14,14 +15,14 @@ export default async function Services() {
     <section className="py-14 md:py-20"><div className="container">
       {services.length ? <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{services.map(service =>
         <article key={service.slug} className="card flex flex-col p-7">
-          <h2 className="text-xl font-bold"><a href={"/services/" + service.slug}>{service.title}</a></h2>
+          <h2 className="text-xl font-bold"><Link prefetch={false} href={"/services/" + service.slug}>{service.title}</Link></h2>
           <p className="mt-4 flex-1 leading-7 text-slate-600">{service.text}</p>
-          <a href={"/services/" + service.slug} className="mt-6 font-semibold text-blue-700">Explore service <span aria-hidden="true">→</span></a>
+          <Link prefetch={false} href={"/services/" + service.slug} className="mt-6 font-semibold text-blue-700">Explore service <span aria-hidden="true">→</span></Link>
         </article>
       )}</div> : <div className="card p-8">
         <h2 className="text-2xl font-bold">Discuss the support you need</h2>
         <p className="mt-4 leading-7 text-slate-600">The service list is currently unavailable. Contact us to discuss your requirements.</p>
-        <a href="/contact?intent=services" className="button button-primary mt-6">Discuss our services</a>
+        <Link prefetch={false} href="/contact?intent=services" className="button button-primary mt-6">Discuss our services</Link>
       </div>}
     </div></section>
   </main>;

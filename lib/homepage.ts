@@ -9,11 +9,16 @@ export function mediaPath(filename: unknown): string {
 }
 export function publicImage(value: number | Media | null | undefined) {
   if (!value || typeof value !== "object") return null;
-  const src = mediaPath(value.filename);
+  const revision = Date.parse(value.updatedAt || "");
+  const imagePath = (filename: unknown) => {
+    const path = mediaPath(filename);
+    return path && Number.isFinite(revision) ? `${path}?v=${revision}` : path;
+  };
+  const src = imagePath(value.filename);
   if (!src || !value.width || !value.height) return null;
   const variants = [value.sizes?.mobile, value.sizes?.tablet, value.sizes?.desktop, value]
     .filter((size): size is NonNullable<typeof size> => Boolean(size?.filename && size.width))
-    .map(size => ({ src: mediaPath(size.filename), width: size.width! }))
+    .map(size => ({ src: imagePath(size.filename), width: size.width! }))
     .filter(size => size.src);
   const unique = [...new Map(variants.map(size => [size.width, size])).values()].sort((a, b) => a.width - b.width);
   return { src, srcSet: unique.map(size => `${size.src} ${size.width}w`).join(", "), alt: value.alt || "", width: value.width, height: value.height, focalX: value.focalX ?? 50, focalY: value.focalY ?? 50 };

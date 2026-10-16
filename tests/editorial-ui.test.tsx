@@ -66,7 +66,7 @@ describe("Services navigation accessibility",()=>{
     expect(container.querySelector(".commerce-mobile-nav")).toBeNull();
   });
   it("opens by keyboard and closes with Escape, keeping focus on its trigger",()=>{
-    render(<Header groups={[{name:"Commerce",slug:"commerce",services:[{slug:"example-service",title:"Example service",text:"Scope",category:"Commerce",categorySlug:"commerce"}]}]} servicesLabel="Services"/>);
+    render(<Header groups={[{name:"Commerce",slug:"commerce",services:[{slug:"example-service",title:"Example service"}]}]} servicesLabel="Services"/>);
     const trigger=screen.getByRole("button",{name:"Services"});
     expect(trigger.getAttribute("aria-expanded")).toBe("false");
     fireEvent.click(trigger,{detail:0});
