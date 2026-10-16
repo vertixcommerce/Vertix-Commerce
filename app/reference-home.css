@@ -282,3 +282,8 @@
 
 /* Keep mobile navigation page names consistent, including service links. */
 .commerce-header .commerce-mobile-nav :is(a:not(.button), button) { font-size: 14px; font-weight: 400; }
+/* Readable labels and comfortable touch targets without enlarging the artwork. */
+.reference-home .eyebrow,.reference-lead-form label,.reference-lead-form input,.reference-lead-form select,.reference-lead-form textarea,.reference-lead-form .text-xs,.reference-lead-form button,.commerce-footer-brand p,.commerce-footer-bottom p{font-size:12px!important}
+.commerce-header button[aria-label="Open navigation"],.commerce-header button[aria-label="Close navigation"]{min-width:44px;min-height:44px;display:grid;place-items:center;flex-shrink:0}
+.commerce-footer nav a{display:flex;align-items:center;min-height:44px}
+@media(max-width:640px){body{padding-bottom:84px}.commerce-mobile-nav :is(a,button){min-height:44px}.reference-lead-form input,.reference-lead-form select,.reference-lead-form textarea{font-size:16px!important}.reference-lead-form label{font-size:14px!important}.reference-faq-list summary{min-height:44px}}

@@ -1,3 +1,4 @@
+import { ADMIN_PATH } from "./lib/admin-path";
 import { withPublicCollectionCache, withPublicGlobalCache } from "./payload/public-content-hooks";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
@@ -24,6 +25,7 @@ import { AssistantSettings } from "./payload/globals/AssistantSettings";
 if (process.env.NODE_ENV === "production" && (!process.env.PAYLOAD_SECRET || process.env.PAYLOAD_SECRET.length < 32 || process.env.PAYLOAD_SECRET === "development-only-secret-change-before-production")) throw new Error("A strong server-only PAYLOAD_SECRET is required in production.");
 if (process.env.S3_BUCKET && (!process.env.S3_ACCESS_KEY_ID || !process.env.S3_SECRET_ACCESS_KEY || !process.env.S3_REGION)) throw new Error("Complete the server-only S3 credentials and region before enabling remote media storage.");
 export default buildConfig({
+  routes: { admin: ADMIN_PATH },
   bin:[{key:"migrate-content",scriptPath:path.resolve(process.cwd(),"scripts/migrate-content.ts")},{key:"create-client-admins",scriptPath:path.resolve(process.cwd(),"scripts/create-client-admins.ts")},{key:"configure-us-market",scriptPath:path.resolve(process.cwd(),"scripts/configure-us-market.ts")},{key:"prepare-about-layout",scriptPath:path.resolve(process.cwd(),"scripts/prepare-about-layout.ts")},{key:"verify-service-layout",scriptPath:path.resolve(process.cwd(),"scripts/verify-service-layout.ts")},{key:"complete-launch",scriptPath:path.resolve(process.cwd(),"scripts/complete-launch.ts")},{key:"bootstrap-admin",scriptPath:path.resolve(process.cwd(),"scripts/bootstrap-admin.ts")},{key:"import-service-catalogue",scriptPath:path.resolve(process.cwd(),"scripts/import-service-catalogue.ts")},{key:"verify-homepage",scriptPath:path.resolve(process.cwd(),"scripts/verify-homepage.ts")}],
   admin:{
     user:"users",

@@ -211,3 +211,7 @@ describe("lead route failure handling", () => {
 
 
 it("accepts an Other service inquiry without requiring a published service record",async()=>{mocks.find.mockResolvedValue({docs:[]});mocks.save.mockResolvedValue({id:44});const response=await lead(request({...validLead,service:"other"}));expect(response.status).toBe(200);expect(mocks.find).not.toHaveBeenCalled();expect(mocks.save.mock.calls[0][0].service).toBe("Other");});
+
+
+it("accepts native POST forms and never redirects personal fields into the URL",async()=>{mocks.save.mockResolvedValue({id:45});const fields=new URLSearchParams({...validLead,consent:"on"});const r=await lead(new NextRequest("http://localhost:3000/api/leads",{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body:fields}));expect(r.status).toBe(303);const location=new URL(r.headers.get("location")!);expect(location.pathname).toBe("/contact");expect(location.search).toBe("?submission=accepted");expect(location.href).not.toContain("qa%40");expect(mocks.save).toHaveBeenCalledOnce();});
+it("rejects invalid native forms using only a generic status redirect",async()=>{const r=await lead(new NextRequest("http://localhost:3000/api/leads",{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body:new URLSearchParams({email:"private@example.invalid"})}));expect(r.status).toBe(303);expect(new URL(r.headers.get("location")!).search).toBe("?submission=error");expect(mocks.save).not.toHaveBeenCalled();});

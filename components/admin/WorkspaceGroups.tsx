@@ -23,7 +23,7 @@ export function WorkspaceGroups({ permissions }: { permissions: SanitizedPermiss
         </summary>
         <ul className="vx-tool-links">
           {group.modules.map(module => <li key={module.slug}>
-            <Link href={"/admin/" + ("global" in module ? "globals/" : "collections/") + module.slug}>
+            <Link href={"/control-room-6f3a9d82c17e/" + ("global" in module ? "globals/" : "collections/") + module.slug}>
               <span><strong>{module.title}</strong><small>{module.description}</small></span>
               <ArrowRight size={16} aria-hidden="true" />
             </Link>

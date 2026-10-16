@@ -6,10 +6,10 @@ import { AdminIcon } from "./AdminIcon";
 
 type SidebarGroups = ReturnType<typeof groupedAdminModules>;
 export function SidebarLinks({ groups, pathname }: { groups: SidebarGroups; pathname: string }) {
-  const hrefFor = (module: SidebarGroups[number]["modules"][number]) => "/admin/" + ("global" in module ? "globals/" : "collections/") + module.slug;
+  const hrefFor = (module: SidebarGroups[number]["modules"][number]) => "/control-room-6f3a9d82c17e/" + ("global" in module ? "globals/" : "collections/") + module.slug;
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
   return <nav className="vx-sidebar-links" aria-label="Admin navigation">
-    <Link className={"vx-sidebar-link" + (pathname === "/admin" ? " is-active" : "")} href="/admin" aria-current={pathname === "/admin" ? "page" : undefined} prefetch={false}><LayoutDashboard size={18} aria-hidden="true" /><span>Overview</span></Link>
+    <Link className={"vx-sidebar-link" + (pathname === "/control-room-6f3a9d82c17e" ? " is-active" : "")} href="/control-room-6f3a9d82c17e" aria-current={pathname === "/control-room-6f3a9d82c17e" ? "page" : undefined} prefetch={false}><LayoutDashboard size={18} aria-hidden="true" /><span>Overview</span></Link>
     <div className="vx-sidebar-groups">
       {groups.map(group => {
         const active = group.modules.some(module => isActive(hrefFor(module)));
@@ -24,9 +24,9 @@ export function SidebarLinks({ groups, pathname }: { groups: SidebarGroups; path
       })}
     </div>
     <div className="vx-sidebar-footer">
-      <Link className={"vx-sidebar-link" + (isActive("/admin/account") ? " is-active" : "")} href="/admin/account" aria-current={isActive("/admin/account") ? "page" : undefined} prefetch={false}><UserCircle size={18} aria-hidden="true" /><span>My account</span></Link>
+      <Link className={"vx-sidebar-link" + (isActive("/control-room-6f3a9d82c17e/account") ? " is-active" : "")} href="/control-room-6f3a9d82c17e/account" aria-current={isActive("/control-room-6f3a9d82c17e/account") ? "page" : undefined} prefetch={false}><UserCircle size={18} aria-hidden="true" /><span>My account</span></Link>
       <a className="vx-sidebar-link" href="/" target="_blank" rel="noreferrer"><ExternalLink size={18} aria-hidden="true" /><span>View website</span></a>
-      <Link className="vx-sidebar-link vx-sidebar-signout" href="/admin/logout" prefetch={false}><LogOut size={18} aria-hidden="true" /><span>Sign out</span></Link>
+      <Link className="vx-sidebar-link vx-sidebar-signout" href="/control-room-6f3a9d82c17e/logout" prefetch={false}><LogOut size={18} aria-hidden="true" /><span>Sign out</span></Link>
     </div>
   </nav>;
 }

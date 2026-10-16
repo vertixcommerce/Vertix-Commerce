@@ -16,31 +16,31 @@ const groups = groupedAdminModules(permissions);
 
 describe("graphical admin navigation", () => {
   it("shows four closed icon groups on the overview without explanatory paragraphs", () => {
-    const html = renderToStaticMarkup(<SidebarLinks groups={groups} pathname="/admin" />);
+    const html = renderToStaticMarkup(<SidebarLinks groups={groups} pathname="/control-room-6f3a9d82c17e" />);
     expect(html.match(/<details\b/g)).toHaveLength(4);
     expect(html).not.toMatch(/<details[^>]*\bopen(?:[\s=>])/);
     expect(html).toContain('aria-label="Admin navigation"');
     expect(html).toContain("<svg");
     expect(html).not.toMatch(/<p(?:\s|>)/);
     for (const module of adminModules) {
-      const href = 'href="/admin/' + ("global" in module ? "globals/" : "collections/") + module.slug + '"';
+      const href = 'href="/control-room-6f3a9d82c17e/' + ("global" in module ? "globals/" : "collections/") + module.slug + '"';
       expect(html.split(href)).toHaveLength(2);
       expect(html).not.toContain(module.description);
     }
   });
 
   it("opens only the current editor's group and marks its link as current", () => {
-    const html = renderToStaticMarkup(<SidebarLinks groups={groups} pathname="/admin/collections/services/123" />);
+    const html = renderToStaticMarkup(<SidebarLinks groups={groups} pathname="/control-room-6f3a9d82c17e/collections/services/123" />);
     expect(html.match(/<details[^>]*\bopen(?:[\s=>])/g)).toHaveLength(1);
-    expect(html).toMatch(/<a[^>]*aria-current="page"[^>]*href="\/admin\/collections\/services"/);
+    expect(html).toMatch(/<a[^>]*aria-current="page"[^>]*href="\/control-room-6f3a9d82c17e\/collections\/services"/);
     expect(html.match(/aria-current="page"/g)).toHaveLength(1);
   });
 
   it("retains account, website, and native sign-out controls", () => {
-    const html = renderToStaticMarkup(<SidebarLinks groups={[]} pathname="/admin/account" />);
+    const html = renderToStaticMarkup(<SidebarLinks groups={[]} pathname="/control-room-6f3a9d82c17e/account" />);
     expect(html).not.toContain("<details");
-    expect(html).toContain('href="/admin/account"');
-    expect(html).toContain('href="/admin/logout"');
+    expect(html).toContain('href="/control-room-6f3a9d82c17e/account"');
+    expect(html).toContain('href="/control-room-6f3a9d82c17e/logout"');
     expect(html).toContain('target="_blank" rel="noreferrer"');
     expect(html).toContain("My account");
   });

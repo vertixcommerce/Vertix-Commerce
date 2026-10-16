@@ -25,11 +25,20 @@ export async function publicGuard(request: Request, scope: string, limit = 12, w
   } catch { return NextResponse.json({ error: "Protection service is temporarily unavailable. Please try again later." }, { status: 503 }); }
   return null;
 }
-export async function boundedJSON(request: Request, maxBytes = 20000): Promise<unknown> {
-  if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) throw new Error("Expected JSON");
+async function boundedText(request: Request, maxBytes = 20000): Promise<string> {
   if (Number(request.headers.get("content-length") || 0) > maxBytes || !request.body) throw new Error("Invalid body");
   const reader = request.body.getReader(); let length = 0; const chunks: Uint8Array[] = [];
   try { while (true) { const { done, value } = await reader.read(); if (done) break; length += value.byteLength; if (length > maxBytes) { await reader.cancel(); throw new Error("Body too large"); } chunks.push(value); } }
   finally { reader.releaseLock(); }
-  return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  return Buffer.concat(chunks).toString("utf8");
+}
+
+export async function boundedJSON(request: Request, maxBytes = 20000): Promise<unknown> {
+  if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) throw new Error("Expected JSON");
+  return JSON.parse(await boundedText(request, maxBytes));
+}
+export async function boundedInquiryForm(request: Request): Promise<unknown> {
+  if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/x-www-form-urlencoded")) throw new Error("Expected form");
+  const values = new URLSearchParams(await boundedText(request));
+  return { ...Object.fromEntries(values), consent: values.get("consent") === "on" };
 }

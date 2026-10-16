@@ -15,7 +15,7 @@ describe("compact dashboard workspace", () => {
     expect(html.match(/<summary\b/g)).toHaveLength(4);
     expect(html).not.toMatch(/<details[^>]*\bopen(?:[\s=>])/);
     for (const module of adminModules) {
-      const href = 'href="/admin/' + ("global" in module ? "globals/" : "collections/") + module.slug + '"';
+      const href = 'href="/control-room-6f3a9d82c17e/' + ("global" in module ? "globals/" : "collections/") + module.slug + '"';
       expect(html.split(href)).toHaveLength(2);
     }
   });
@@ -23,8 +23,8 @@ describe("compact dashboard workspace", () => {
     expect(renderToStaticMarkup(<WorkspaceGroups permissions={{}} />)).toBe("");
     const html = renderToStaticMarkup(<WorkspaceGroups permissions={{ collections: { services: { read: true, fields: true } } }} />);
     expect(html.match(/<details\b/g)).toHaveLength(1);
-    expect(html).toContain('href="/admin/collections/services"');
-    expect(html).not.toContain("/admin/collections/leads");
-    expect(html).not.toContain("/admin/globals/website-settings");
+    expect(html).toContain('href="/control-room-6f3a9d82c17e/collections/services"');
+    expect(html).not.toContain("/control-room-6f3a9d82c17e/collections/leads");
+    expect(html).not.toContain("/control-room-6f3a9d82c17e/globals/website-settings");
   });
 });

@@ -8,7 +8,7 @@ import "../../about-page.css";
 
 export async function generateMetadata() {
   const about = await getAboutPage();
-  return pageMetadata(about.heroTitle || "About Vertix", about.heroIntroduction || "Learn about Vertix Commerce and request a meeting with our team.", "/about", about.seo);
+  return pageMetadata("About Us", "Meet Vertix Commerce, a Pakistan-based agency supporting Amazon, eBay, Walmart and Shopify sellers with store content, listings and daily operations.", "/about", about.seo);
 }
 export default async function About() {
   const [about, chrome] = await Promise.all([getAboutPage(), getSiteChrome()]);
