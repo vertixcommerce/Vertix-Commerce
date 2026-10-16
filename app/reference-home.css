@@ -162,8 +162,8 @@
 .commerce-footer-grid { display: grid; grid-template-columns: 1.4fr .8fr 1.15fr 1fr; gap: 36px; }
 .footer-logo { height: 75px; width: auto; border-radius: 4px; margin-bottom: 11px; filter: grayscale(1) invert(1); mix-blend-mode: screen; }
 .commerce-footer-brand p { font-size: 11px; line-height: 1.5; max-width: 240px; margin-bottom: 14px; }
-.commerce-footer-brand nav a { width: 27px; height: 27px; background: #ffffff13; color: white; border-color: #ffffff15; }
-.commerce-footer-brand nav svg { width: 14px; height: 14px; }
+.commerce-footer-brand nav a { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; background: #ffffff13; color: white; border-color: #ffffff15; }
+.commerce-footer-brand nav svg { display: block; width: 18px; height: 18px; }
 .commerce-footer-grid > nav h2 { color: white; font-size: 13px; font-weight: 700; margin: 8px 0 13px; }
 .commerce-footer-grid > nav a { display: flex; align-items: center; gap: 7px; font-size: 11px; line-height: 1.6; margin-bottom: 5px; }
 .commerce-footer a:hover { color: white; text-decoration: underline; }
@@ -285,8 +285,8 @@
 /* Readable labels and comfortable touch targets without enlarging the artwork. */
 .reference-home .eyebrow,.reference-lead-form label,.reference-lead-form input,.reference-lead-form select,.reference-lead-form textarea,.reference-lead-form .text-xs,.reference-lead-form button,.commerce-footer-brand p,.commerce-footer-bottom p{font-size:12px!important}
 .commerce-header button[aria-label="Open navigation"],.commerce-header button[aria-label="Close navigation"]{min-width:44px;min-height:44px;place-items:center;flex-shrink:0}
-.commerce-footer nav a{display:flex;align-items:center}
-@media(max-width:767px){.commerce-footer nav a{min-height:44px}}
+.commerce-footer-grid > nav a{display:flex;align-items:center}
+@media(max-width:767px){.commerce-footer-grid > nav a{min-height:44px}}
 @media(max-width:640px){body{padding-bottom:84px}.commerce-mobile-nav :is(a,button){min-height:44px}.reference-lead-form input,.reference-lead-form select,.reference-lead-form textarea{font-size:16px!important}.reference-lead-form label{font-size:14px!important}.reference-faq-list summary{min-height:44px}}
 
 /* Align footer legal links with the copyright row. */
