@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { preconnect } from "react-dom";
 import { ArrowRight, CalendarDays } from "lucide-react";
 import { calendlyEventURL } from "@/lib/booking";
 import { safeURL } from "@/lib/public-config";
@@ -18,11 +19,23 @@ export function MeetingBooking({ bookingURL }: { bookingURL: string }) {
     <h2 id="booking-heading" className="mb-4 text-2xl font-black">Choose your meeting time</h2>
     <a className="button button-primary" href={external} referrerPolicy="no-referrer">Open booking calendar<ArrowRight size={16}/></a>
   </section>;
+  preconnect("https://calendly.com");
+  preconnect("https://assets.calendly.com", { crossOrigin: "anonymous" });
   return <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white" aria-label="Meeting scheduling calendar">
-    {loadedURL !== eventURL && <p role="status" className="px-6 pt-5 text-sm text-slate-600">Loading calendar…</p>}
-    <iframe key={eventURL} src={eventURL} title="Book a meeting with Vertix through Calendly" className="block w-full border-0 bg-white" style={{height:820}} referrerPolicy="no-referrer" onLoad={() => setLoadedURL(eventURL)}/>
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-6 py-4 text-sm">
+      <p className="text-slate-600">Choose a time that works for you.</p>
+      <a href={eventURL} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer" className="inline-flex items-center gap-2 font-semibold text-blue-700 underline">Open Calendly directly<ArrowRight size={15}/><span className="sr-only"> (opens in a new tab)</span></a>
+    </div>
+    <div className="relative bg-white" style={{height:820}}>
+      {loadedURL !== eventURL && <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-slate-50 text-center" role="status" aria-live="polite">
+        <CalendarDays size={36} className="text-blue-700" aria-hidden="true"/>
+        <p className="px-6 text-sm font-medium text-slate-600">Loading available meeting times…</p>
+        <p className="max-w-sm px-6 text-xs leading-6 text-slate-500">Taking longer than expected? Use the direct Calendly link above.</p>
+      </div>}
+      <iframe key={eventURL} src={eventURL} loading="eager" title="Book a meeting with Vertix through Calendly" className="block h-full w-full border-0 bg-white" referrerPolicy="no-referrer" onLoad={() => setLoadedURL(eventURL)}/>
+    </div>
     <div className="border-t border-slate-100 px-6 py-4 text-xs leading-6 text-slate-500">
-      <p>Calendar unavailable? <a href={eventURL} referrerPolicy="no-referrer" className="font-semibold text-blue-700 underline">Open Calendly directly</a> or <a href="/contact?intent=meeting" className="text-blue-700 underline">request help</a>.</p>
+      <p>Need help booking? <a href="/contact?intent=meeting" className="text-blue-700 underline">Contact our team</a>.</p>
       <p>Calendly processes your booking under its <a href="https://calendly.com/legal/privacy-notice" className="underline">privacy notice</a>. Check your timezone and Calendly’s confirmation after scheduling.</p>
     </div>
   </section>;

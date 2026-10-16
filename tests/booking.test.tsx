@@ -31,6 +31,8 @@ describe("Calendly Free booking", () => {
     expect(screen.queryByRole("button", {name:"Load Calendly scheduler"})).toBeNull();
     expect(screen.getByTitle("Book a meeting with Vertix through Calendly").getAttribute("src")).toBe(event);
     expect(container.textContent).not.toContain("Meeting confirmed!");
+    expect(screen.getByTitle("Book a meeting with Vertix through Calendly").getAttribute("loading")).toBe("eager");
+    expect(container.querySelector("iframe")?.parentElement?.style.height).toBe("820px");
     fireEvent.load(screen.getByTitle("Book a meeting with Vertix through Calendly"));
     expect(screen.queryByRole("status")).toBeNull();
   });
@@ -38,8 +40,8 @@ describe("Calendly Free booking", () => {
     render(<MeetingBooking bookingURL={event}/>);
     const link = screen.getByRole("link", {name:/Open Calendly directly/});
     expect(link.getAttribute("href")).toBe(event);
-    expect(link.getAttribute("target")).toBeNull();
-    expect(screen.getByRole("status").textContent).toContain("Loading calendar");
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(screen.getByRole("status").textContent).toContain("Loading available meeting times");
   });
   it("shows an honest missing-configuration fallback without an iframe", () => {
     const {container} = render(<MeetingBooking bookingURL=""/>);
