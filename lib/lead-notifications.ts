@@ -14,12 +14,12 @@ function safeProviderError(error: { name?: string; message?: string }) {
 
 export async function notifyLead(payload: Payload, lead: Lead, req?: PayloadRequest) {
   const settings = await payload.findGlobal({ slug: "website-settings", req });
-  const recipient = settings.leadNotificationEmail || process.env.BUSINESS_NOTIFICATION_EMAIL;
+  const recipient = settings.leadNotificationEmail;
   const apiKey = process.env.RESEND_API_KEY;
   const fromEmail = process.env.RESEND_FROM_EMAIL_ADDRESS;
   let status: "sent" | "failed" | "not-configured" = "not-configured";
   if (!recipient || !apiKey || !fromEmail) {
-    const missing = [!recipient && "leadNotificationEmail or BUSINESS_NOTIFICATION_EMAIL", !apiKey && "RESEND_API_KEY", !fromEmail && "RESEND_FROM_EMAIL_ADDRESS"].filter(Boolean);
+    const missing = [!recipient && "Admin > Website Settings > Inquiry notification inbox", !apiKey && "RESEND_API_KEY", !fromEmail && "RESEND_FROM_EMAIL_ADDRESS"].filter(Boolean);
     payload.logger.error(`Inquiry ${lead.id} was saved, but its email notification is not configured. Missing: ${missing.join(", ")}.`);
   } else {
     try {

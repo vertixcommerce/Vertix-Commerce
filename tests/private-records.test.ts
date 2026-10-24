@@ -42,6 +42,13 @@ describe("private inquiry storage and notifications", () => {
     expect(await notifyLead(payload as unknown as Payload, lead)).toBe("not-configured"); expect(mocks.send).not.toHaveBeenCalled();
     expect(payload.logger.error).toHaveBeenCalledWith(expect.stringContaining("RESEND_API_KEY"));
   });
+  it("does not use the environment fallback when the admin inbox is empty", async () => {
+    vi.stubEnv("BUSINESS_NOTIFICATION_EMAIL", "fallback@example.invalid");
+    const payload = { findGlobal: vi.fn().mockResolvedValue({}), update: vi.fn(), logger: { error: vi.fn(), info: vi.fn() } };
+    expect(await notifyLead(payload as unknown as Payload, lead)).toBe("not-configured");
+    expect(mocks.send).not.toHaveBeenCalled();
+    expect(payload.logger.error).toHaveBeenCalledWith(expect.stringContaining("Inquiry notification inbox"));
+  });
 });
 describe("consented conversations", () => {
   it("uses an unguessable cookie and stores only its hash", () => {

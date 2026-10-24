@@ -6,7 +6,7 @@ export function launchReadiness(website: Partial<WebsiteSetting>, approvedEN: nu
     { label: "Gemini provider key", ready: Boolean(env.GEMINI_API_KEY) },
     { label: "Approved English knowledge", ready: approvedEN > 0 },
     { label: "Approved German knowledge", ready: approvedDE > 0 },
-    { label: "Email sender and notification inbox", ready: Boolean(env.RESEND_API_KEY && env.RESEND_FROM_EMAIL_ADDRESS && (website.leadNotificationEmail || env.BUSINESS_NOTIFICATION_EMAIL)) },
+    { label: "Email sender and notification inbox", ready: Boolean(env.RESEND_API_KEY && env.RESEND_FROM_EMAIL_ADDRESS && website.leadNotificationEmail) },
     { label: "Meeting booking URL", ready: Boolean(configuredBookingURL(website.bookingURL, env)) },
     { label: "Real business social profiles", ready: Boolean(website.socialLinks?.some(link => socialURL(link.platform, link.url))) },
     { label: "Public contact details", ready: Boolean(website.contactEmail || website.whatsappNumber || env.NEXT_PUBLIC_CONTACT_EMAIL || env.NEXT_PUBLIC_WHATSAPP_NUMBER) },
