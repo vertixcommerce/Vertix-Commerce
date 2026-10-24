@@ -25,16 +25,22 @@ describe("private inquiry storage and notifications", () => {
     const findGlobal = vi.fn().mockResolvedValue({ leadNotificationEmail: "inbox@example.invalid" }), update = vi.fn();
     mocks.send.mockResolvedValue({ error: { message: "Provider unavailable" } });
     const req = { transactionID: "test-transaction" } as PayloadRequest;
-    const status = await notifyLead({ findGlobal, update } as unknown as Payload, lead, req);
+    const logger = { error: vi.fn(), info: vi.fn() };
+    const status = await notifyLead({ findGlobal, update, logger } as unknown as Payload, lead, req);
     expect(status).toBe("failed"); expect(update.mock.calls[0][0].req).toBe(req);
-    const body = mocks.send.mock.calls[0][0].text;
-    for (const privateValue of [lead.name, lead.email, lead.whatsapp, lead.requirements]) expect(body).not.toContain(privateValue);
-    expect(body).toContain("Reference: 42");
+    const [message, options] = mocks.send.mock.calls[0];
+    expect(message).toMatchObject({ to: "inbox@example.invalid", replyTo: lead.email });
+    for (const detail of [lead.name, lead.email, lead.whatsapp, lead.country, lead.service, lead.requirements]) expect(message.text).toContain(detail);
+    expect(message.text).toContain("Reference: 42");
+    expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("Provider unavailable"));
+    expect(JSON.stringify(logger.error.mock.calls)).not.toContain(lead.email);
+    expect(options).toEqual({ idempotencyKey: "vertix-lead-42" });
   });
   it("does not attempt email when the provider is not configured", async () => {
     vi.stubEnv("RESEND_API_KEY", "");
-    const payload = { findGlobal: vi.fn().mockResolvedValue({}), update: vi.fn() };
+    const payload = { findGlobal: vi.fn().mockResolvedValue({}), update: vi.fn(), logger: { error: vi.fn(), info: vi.fn() } };
     expect(await notifyLead(payload as unknown as Payload, lead)).toBe("not-configured"); expect(mocks.send).not.toHaveBeenCalled();
+    expect(payload.logger.error).toHaveBeenCalledWith(expect.stringContaining("RESEND_API_KEY"));
   });
 });
 describe("consented conversations", () => {
