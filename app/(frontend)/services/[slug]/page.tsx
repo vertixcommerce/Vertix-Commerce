@@ -1,3 +1,4 @@
+import { absoluteSiteURL } from "@/lib/site-url";
 import { StructuredData } from "@/components/structured-data";
 import "../../../service-hero-visual.css";
 import { notFound } from "next/navigation";
@@ -12,7 +13,7 @@ export async function generateMetadata({params}:{params:Promise<{slug:string}>})
 export default async function ServicePage({params}:{params:Promise<{slug:string}>}) {
   const {slug}=await params; const service=await getPublicService(slug); if(!service)notFound();
   const chrome = await getSiteChrome();
-  return <><StructuredData data={{"@context":"https://schema.org","@type":"Service",name:service.title,description:service.text,url:`${process.env.NEXT_PUBLIC_SITE_URL}/services/${service.slug}`,provider:{"@type":"Organization",name:"Vertix Commerce"}}}/><ServiceDetail service={service} contact={chrome.contact}/></>;
+  return <><StructuredData data={{"@context":"https://schema.org","@type":"Service",name:service.title,description:service.text,url:absoluteSiteURL(`/services/${service.slug}`),provider:{"@type":"Organization",name:"Vertix Commerce"}}}/><ServiceDetail service={service} contact={chrome.contact}/></>;
 }
 
 
