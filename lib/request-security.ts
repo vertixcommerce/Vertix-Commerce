@@ -12,7 +12,7 @@ export function sameOrigin(request: Request) {
   try {
     const submitted = new URL(origin).origin;
     // Explicit configuration only: never trust Origin or forwarded Host to define the allowlist.
-    const configured = [process.env.NEXT_PUBLIC_SITE_URL, process.env.RENDER_EXTERNAL_URL].filter((value): value is string => Boolean(value?.trim()));
+    const configured = [process.env.NEXT_PUBLIC_SITE_URL, process.env.RENDER_EXTERNAL_URL, ...(process.env.TRUSTED_ORIGINS || "").split(",")].filter((value): value is string => Boolean(value?.trim()));
     return (configured.length ? configured : [request.url]).some(value => {
       try { const url = new URL(value); return ["http:", "https:"].includes(url.protocol) && !url.username && !url.password && url.origin === submitted; } catch { return false; }
     });

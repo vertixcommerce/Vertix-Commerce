@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { boundedJSON, clientKey, sameOrigin } from "@/lib/request-security";
 let limiter: typeof import("@/lib/rate-limit");
-beforeEach(async () => { vi.resetModules(); vi.stubEnv("NODE_ENV", "development"); vi.stubEnv("UPSTASH_REDIS_REST_URL", ""); vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", ""); vi.stubEnv("TRUST_PROXY_HEADERS", "false"); limiter = await import("@/lib/rate-limit"); });
+beforeEach(async () => { vi.resetModules(); vi.stubEnv("NODE_ENV", "development"); vi.stubEnv("UPSTASH_REDIS_REST_URL", ""); vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", ""); vi.stubEnv("TRUST_PROXY_HEADERS", "false"); vi.stubEnv("TRUSTED_ORIGINS", ""); limiter = await import("@/lib/rate-limit"); });
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); vi.useRealTimers(); });
 describe("rate and cost protection", () => {
   it("enforces and resets a local rate window", async () => {
@@ -58,6 +58,23 @@ describe("public request boundaries", () => {
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://vertixcommerce.example");
     expect(sameOrigin(request("https://vertixcommerce.example"))).toBe(true);
     expect(sameOrigin(request("https://vertix-commerce.onrender.com"))).toBe(true);
+  });
+  it("trusts only the configured custom-domain origins behind the production proxy", () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://vertixcommerce.com");
+    vi.stubEnv("RENDER_EXTERNAL_URL", "");
+    vi.stubEnv("TRUSTED_ORIGINS", " https://www.vertixcommerce.com, ");
+    const request = (origin: string) => new Request("http://localhost:3000/api/leads", { headers: { origin, host: "localhost:3000", "x-forwarded-host": "untrusted.example" } });
+    expect(sameOrigin(request("https://vertixcommerce.com"))).toBe(true);
+    expect(sameOrigin(request("https://www.vertixcommerce.com"))).toBe(true);
+    for (const origin of ["https://untrusted.example", "https://vertixcommerce.com.untrusted.example", "https://other.vertixcommerce.com", "http://vertixcommerce.com", "https://vertixcommerce.com:8443", "https://vertix-commerce.vercel.app", "null"]) {
+      expect(sameOrigin(request(origin))).toBe(false);
+    }
+  });
+  it("does not interpret wildcards or credentialed config entries as trusted origins", () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://vertixcommerce.com");
+    vi.stubEnv("RENDER_EXTERNAL_URL", "");
+    vi.stubEnv("TRUSTED_ORIGINS", "*, https://user:password@untrusted.example, javascript:alert(1)");
+    expect(sameOrigin(new Request("https://vertixcommerce.com/api/leads", { headers: { origin: "https://untrusted.example" } }))).toBe(false);
   });
   it("limits actual streamed bytes even without a content-length header", async () => {
     const req = new Request("http://localhost:3000/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ message: "x".repeat(1000) }) });

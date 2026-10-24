@@ -165,6 +165,27 @@ describe("chat route failure handling", () => {
 });
 
 describe("lead route failure handling", () => {
+  it.each(["https://vertixcommerce.com", "https://www.vertixcommerce.com"])("accepts a validated inquiry from trusted custom origin %s", async origin => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://vertixcommerce.com");
+    vi.stubEnv("TRUSTED_ORIGINS", "https://www.vertixcommerce.com");
+    vi.stubEnv("RENDER_EXTERNAL_URL", "");
+    mocks.save.mockResolvedValue({ id: 123 });
+    const req = new NextRequest("http://localhost:3000/api/leads", { method: "POST", headers: { origin, "content-type": "application/json" }, body: JSON.stringify(validLead) });
+    const response = await lead(req);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ accepted: true, id: 123 });
+    expect(mocks.save).toHaveBeenCalledWith(expect.objectContaining({ email: validLead.email, consent: true }));
+  });
+  it("still validates trusted custom-origin submissions and rejects untrusted origins before persistence", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://vertixcommerce.com");
+    vi.stubEnv("TRUSTED_ORIGINS", "https://www.vertixcommerce.com");
+    vi.stubEnv("RENDER_EXTERNAL_URL", "");
+    const submit = (origin: string, body: unknown) => lead(new NextRequest("https://vertixcommerce.com/api/leads", { method: "POST", headers: { origin, "content-type": "application/json" }, body: JSON.stringify(body) }));
+    expect((await submit("https://vertixcommerce.com", { ...validLead, consent: false })).status).toBe(400);
+    expect((await submit("https://untrusted.example", validLead)).status).toBe(403);
+    expect(mocks.save).not.toHaveBeenCalled();
+  });
+
   it("accepts consented production inquiries without the removed legal-page approval gate", async () => {
     vi.stubEnv("NODE_ENV", "production");
     mocks.save.mockResolvedValue({id:43});
