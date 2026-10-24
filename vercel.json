@@ -8,5 +8,15 @@
       "path": "/api/maintenance/retention/scheduled",
       "schedule": "0 3 * * *"
     }
-  ]
+  ],
+  "env": {
+    "NEXT_PUBLIC_SITE_URL": "https://vertixcommerce.com",
+    "TRUSTED_ORIGINS": "https://www.vertixcommerce.com"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_SITE_URL": "https://vertixcommerce.com",
+      "TRUSTED_ORIGINS": "https://www.vertixcommerce.com"
+    }
+  }
 }
