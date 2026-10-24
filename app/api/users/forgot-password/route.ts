@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getRuntimeSettings } from "@/lib/runtime-settings";
-import { boundedJSON, publicGuard } from "@/lib/request-security";
+import { boundedPayloadJSON, publicGuard } from "@/lib/request-security";
 export async function POST(request: NextRequest) {
   const rejected = await publicGuard(request, "password-recovery", 3, 600000);
   if (rejected) return rejected;
   let body: unknown;
-  try { body = await boundedJSON(request, 2000); }
+  try { body = await boundedPayloadJSON(request, 2000); }
   catch { return NextResponse.json({ errors: [{ message: "Invalid request." }] }, { status: 400 }); }
   const parsed = z.object({ email: z.string().trim().email().max(180) }).safeParse(body);
   if (!parsed.success) return NextResponse.json({ errors: [{ message: "Enter a valid email address." }] }, { status: 400 });

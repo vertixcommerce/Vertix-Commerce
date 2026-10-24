@@ -44,6 +44,17 @@ describe("password recovery boundaries", () => {
     recover.mockResolvedValue(null);
     expect((await forgot(request({ email: "unknown@example.invalid" }))).status).toBe(200);
   });
+  it("accepts Payload admin's bounded multipart forgot-password form", async () => {
+    vi.stubEnv("RESEND_API_KEY", "test-placeholder"); vi.stubEnv("RESEND_FROM_EMAIL_ADDRESS", "sender@example.invalid");
+    const recover = vi.fn().mockResolvedValue("mock-secret-reset-token");
+    mocks.settings.mockResolvedValue({ payload: { forgotPassword: recover } });
+    const form = new FormData(); form.set("_payload", JSON.stringify({ email: "qa@example.invalid" }));
+    const req = new NextRequest("http://localhost:3000/api/users/forgot-password", { method: "POST", body: form });
+    const response = await forgot(req);
+    expect(response.status).toBe(200);
+    expect(JSON.stringify(await response.json())).not.toContain("mock-secret-reset-token");
+    expect(recover).toHaveBeenCalledWith({ collection: "users", data: { email: "qa@example.invalid" } });
+  });
   it("handles provider failure without disclosing details", async () => {
     vi.stubEnv("RESEND_API_KEY", "test-placeholder"); vi.stubEnv("RESEND_FROM_EMAIL_ADDRESS", "sender@example.invalid");
     mocks.settings.mockResolvedValue({ payload: { forgotPassword: vi.fn().mockRejectedValue(new Error("Private mail error")) } });

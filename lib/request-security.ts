@@ -37,6 +37,18 @@ export async function boundedJSON(request: Request, maxBytes = 20000): Promise<u
   if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) throw new Error("Expected JSON");
   return JSON.parse(await boundedText(request, maxBytes));
 }
+// Payload's admin auth forms submit JSON inside a multipart `_payload` field.
+// Read through the same streaming byte cap before asking the runtime parser to decode it.
+export async function boundedPayloadJSON(request: Request, maxBytes = 2000): Promise<unknown> {
+  const contentType = request.headers.get("content-type") || "";
+  if (contentType.toLowerCase().startsWith("application/json")) return boundedJSON(request, maxBytes);
+  if (!contentType.toLowerCase().startsWith("multipart/form-data;")) throw new Error("Expected JSON or Payload form data");
+  const raw = await boundedText(request, maxBytes);
+  const form = await new Request(request.url, { method: "POST", headers: { "content-type": contentType }, body: raw }).formData();
+  const payload = form.get("_payload");
+  if (typeof payload !== "string") throw new Error("Missing Payload form data");
+  return JSON.parse(payload);
+}
 export async function boundedInquiryForm(request: Request): Promise<unknown> {
   if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/x-www-form-urlencoded")) throw new Error("Expected form");
   const values = new URLSearchParams(await boundedText(request));
