@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { AccessArgs, FieldAccessArgs, Field } from "payload";
-import { administrator, contentEditor, leadTeam, ownerField, publishedOrAuthenticated, selfOrAdministrator, supportTeam } from "@/payload/access";
+import { administrator, contentEditor, leadTeam, ownerField, ownerOnly, publishedOrAuthenticated, selfOrAdministrator, selfOrOwner, supportTeam } from "@/payload/access";
 import { Users } from "@/payload/collections/Users";
 import { Media } from "@/payload/collections/Media";
 import { Articles } from "@/payload/collections/Articles";
@@ -44,6 +44,20 @@ describe("admin access", () => {
   });
   it.each(["owner", "administrator"])("allows %s to manage team records", role => {
     expect(selfOrAdministrator(args(role))).toBe(true);
+  });
+  it("limits account updates to the owner or the account holder", () => {
+    expect(selfOrOwner(args("administrator"))).toEqual({ id: { equals: 42 } });
+    expect(selfOrOwner(args("editor"))).toEqual({ id: { equals: 42 } });
+    expect(selfOrOwner(args("owner"))).toBe(true);
+    expect(selfOrOwner(args())).toBe(false);
+    expect(Users.access?.update).toBe(selfOrOwner);
+  });
+  it("restricts force-unlock and deleting team accounts to owners", () => {
+    expect(ownerOnly(args("owner"))).toBe(true);
+    expect(ownerOnly(args("administrator"))).toBe(false);
+    expect(Users.access?.create).toBe(ownerOnly);
+    expect(Users.access?.unlock).toBe(ownerOnly);
+    expect(Users.access?.delete).toBe(ownerOnly);
   });
   it("only lets owners assign roles on both create and update", () => {
     const roles = Users.fields.find(field => "name" in field && field.name === "roles");

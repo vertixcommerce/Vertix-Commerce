@@ -15,6 +15,8 @@ export const publishedOrAuthenticated: Access=({req})=>{
 export const contentEditor: Access=({req})=>roles(req.user).some(r=>["owner","administrator","editor"].includes(r));
 export const administrator: Access=({req})=>roles(req.user).some(r=>["owner","administrator"].includes(r));
 export const selfOrAdministrator: Access=({req})=>administrator({req})===true?true:req.user?{id:{equals:req.user.id}}:false;
+export const ownerOnly: Access=({req})=>roles(req.user).includes("owner");
+export const selfOrOwner: Access=({req})=>roles(req.user).includes("owner")?true:req.user?{id:{equals:req.user.id}}:false;
 export const leadTeam: Access=({req})=>roles(req.user).some(r=>["owner","administrator","sales"].includes(r));
 export const supportTeam: Access=({req})=>roles(req.user).some(r=>["owner","administrator","support"].includes(r));
 export const ownerField: FieldAccess=({req})=>roles(req.user).includes("owner");
