@@ -14,6 +14,10 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   manifest: "/manifest.json",
   metadataBase: new URL(getSiteOrigin()),
+  icons: {
+    icon: [{ url: absoluteSiteURL("/icon.png"), type: "image/png", sizes: "192x192" }],
+    apple: [{ url: absoluteSiteURL("/apple-touch-icon.png"), type: "image/png", sizes: "180x180" }],
+  },
   title: { default: "Vertix Commerce | Commerce Services", template: "%s | Vertix Commerce" },
   description: "Explore Vertix Commerce services and discuss your business requirements with our team."
 };
