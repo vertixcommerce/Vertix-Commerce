@@ -7,11 +7,12 @@ vi.mock("next/cache", () => ({
     const result = await load(); state.values.set(key, result); return result;
   }),
   revalidateTag: vi.fn(() => state.values.clear()),
+  revalidatePath: vi.fn(),
 }));
 vi.mock("next/server", () => ({ connection: vi.fn(async () => {}), after: vi.fn((callback: () => void) => state.pending.push(callback)) }));
 vi.mock("payload", () => ({ getPayload: vi.fn(async () => state.cms) }));
 vi.mock("@payload-config", () => ({ default: {} }));
-import { unstable_cache, revalidateTag } from "next/cache";
+import { unstable_cache, revalidateTag, revalidatePath } from "next/cache";
 import { readPublicContent, PUBLIC_CONTENT_TAG } from "@/lib/public-content-cache";
 import { withPublicCollectionCache, withPublicGlobalCache } from "@/payload/public-content-hooks";
 import { getArticle, getArticles } from "@/lib/editorial-content";
@@ -48,6 +49,7 @@ it.each(["afterChange", "afterDelete"] as const)("refreshes published content af
   state.cms.find.mockResolvedValue({ docs: event === "afterDelete" ? [] : [article("After")] });
   state.pending.forEach(callback => callback());
   expect(revalidateTag).toHaveBeenCalledWith(PUBLIC_CONTENT_TAG, { expire: 0 });
+  expect(revalidatePath).toHaveBeenCalledWith("/sitemap.xml");
   expect((await getArticle("guide"))?.title).toBe(event === "afterDelete" ? undefined : "After");
 });
 it("preserves existing CMS hooks when adding global invalidation", () => {

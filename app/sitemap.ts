@@ -9,7 +9,7 @@ import config from "@payload-config";
 export const revalidate = 3600;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = absoluteSiteURL("/");
-  return readPublicContent(["sitemap-v2", base], async () => {
+  return readPublicContent(["sitemap-v3", base], async () => {
     const routes: MetadataRoute.Sitemap = ["/", "/services", "/blogs", "/contact", "/meeting"].map(path => ({ url: absoluteSiteURL(path) }));
     if (!process.env.DATABASE_URL) return routes;
     const payload = await getPayload({ config });
