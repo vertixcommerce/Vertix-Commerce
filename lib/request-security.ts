@@ -18,10 +18,10 @@ export function sameOrigin(request: Request) {
     });
   } catch { return false; }
 }
-export async function publicGuard(request: Request, scope: string, limit = 12, windowMs = 60000) {
+export async function publicGuard(request: Request, scope: string, limit = 12, windowMs = 60000, options: { localRateLimitFallback?: boolean } = {}) {
   if (!sameOrigin(request)) return NextResponse.json({ error: "Cross-site requests are not allowed." }, { status: 403 });
   try {
-    if (!await allowRequest(scope + ":" + clientKey(request), limit, windowMs)) return NextResponse.json({ error: "Too many requests. Please wait and try again." }, { status: 429, headers: { "Retry-After": String(Math.ceil(windowMs / 1000)) } });
+    if (!await allowRequest(scope + ":" + clientKey(request), limit, windowMs, { localFallback: options.localRateLimitFallback })) return NextResponse.json({ error: "Too many requests. Please wait and try again." }, { status: 429, headers: { "Retry-After": String(Math.ceil(windowMs / 1000)) } });
   } catch { return NextResponse.json({ error: "Protection service is temporarily unavailable. Please try again later." }, { status: 503 }); }
   return null;
 }

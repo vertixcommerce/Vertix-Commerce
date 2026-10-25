@@ -19,6 +19,18 @@ describe("rate and cost protection", () => {
     vi.stubEnv("NODE_ENV", "production");
     await expect(limiter.allowRequest("qa")).rejects.toThrow("Shared protection required");
   });
+  it("uses the bounded local limiter for inquiries if shared Redis is absent or failing", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    expect(await limiter.allowRequest("lead:qa", 2, 60000, { localFallback: true })).toBe(true);
+    expect(await limiter.allowRequest("lead:qa", 2, 60000, { localFallback: true })).toBe(true);
+    expect(await limiter.allowRequest("lead:qa", 2, 60000, { localFallback: true })).toBe(false);
+
+    vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://redis.example.invalid"); vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "test-placeholder");
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Redis unavailable")));
+    expect(await limiter.allowRequest("lead:other", 1, 60000, { localFallback: true })).toBe(true);
+    expect(await limiter.allowRequest("lead:other", 1, 60000, { localFallback: true })).toBe(false);
+    await expect(limiter.allowRequest("chat:qa")).rejects.toThrow("Redis unavailable");
+  });
   it("uses atomic shared rate counting without raw user identifiers", async () => {
     vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://redis.example.invalid"); vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "test-placeholder");
     const fetch = vi.fn().mockResolvedValue(Response.json({ result: 3 })); vi.stubGlobal("fetch", fetch);

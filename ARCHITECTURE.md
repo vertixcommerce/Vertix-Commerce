@@ -18,7 +18,7 @@ The admin's saved homepage order and visibility are rendered on each request, wi
 - Business answers are verified exact passages; there is no fabricated business-content fallback, unapproved translation or unrestricted browsing.
 - Resend notifications contain a reference/internal link, not complete transcripts or requirement text.
 - Roles: owner, administrator, editor, sales, support, viewer. Website settings require administrator/owner access; media uploads require content-editor access.
-- Production limits use shared Redis and fail closed if protection fails. Trusted proxy configuration is an explicit hosting responsibility.
+- Production API limits use shared Redis. Inquiry submissions retain a bounded per-instance rate limit if Redis is missing or unavailable, so valid leads can still be saved; other protected APIs fail closed. During that fallback, limits are less consistent across serverless instances. Trusted proxy configuration is an explicit hosting responsibility.
 - Stored chats require optional consent and an HttpOnly browser session. Staff replies are polled, not guaranteed immediate support.
 - Retention deletion requires owner approval plus an authenticated scheduled job.
 

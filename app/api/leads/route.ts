@@ -12,7 +12,10 @@ export async function POST(request:NextRequest) {
     url.searchParams.set("submission",data.accepted ? "accepted" : options.status === 429 ? "limited" : "error");
     const response=NextResponse.redirect(url,303);response.headers.set("Cache-Control","no-store");return response;
   }
-  const rejected=await publicGuard(request,"lead",4,600000);if(rejected)return htmlForm?reply({error:true},{status:rejected.status}):rejected;
+  // Keep inquiry capture available during a Redis outage. The bounded local
+  // limiter is per server instance; origin checks, validation, honeypot,
+  // payload limits, and database persistence still apply.
+  const rejected=await publicGuard(request,"lead",4,600000,{localRateLimitFallback:true});if(rejected)return htmlForm?reply({error:true},{status:rejected.status}):rejected;
   let body:unknown;try{body=htmlForm?await boundedInquiryForm(request):await boundedJSON(request)}catch{return reply({error:"Invalid request."},{status:400})}
   const result=leadSchema.safeParse(body);if(!result.success)return reply({error:"Please review the required fields and consent."},{status:400});
   const de=result.data.locale==="de";
