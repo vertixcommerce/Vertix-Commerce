@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Check, Globe2, ShieldCheck } from "lucide-react";
 import type { PublicService } from "@/lib/content";
+import type { RelatedGuide } from "@/lib/editorial-content";
 import type { ContactConfig } from "@/lib/public-config";
 import { safeURL } from "@/lib/public-config";
 import { meetingHref } from "@/lib/booking";
@@ -18,7 +19,7 @@ function OfferingIcon({ title, index, icon }: { title: string; index: number; ic
   return <ServiceOfferingIcon kind={icon && icon !== "auto" ? icon : automatic}/>;
 }
 function Heading({ title, intro }: { title: string; intro?: string }) { return <div className="service-heading"><h2>{title}</h2>{intro && <p>{intro}</p>}</div>; }
-export function ServiceDetail({ service, contact }: { service: PublicService; contact: ContactConfig }) {
+export function ServiceDetail({ service, contact, guides = [] }: { service: PublicService; contact: ContactConfig; guides?: RelatedGuide[] }) {
   const page = service.servicePage || {};
   const inquiry = `/contact?service=${encodeURIComponent(service.slug)}`;
   const results = (page.results || []).filter(row => row.approved && row.context?.trim());
@@ -37,6 +38,7 @@ export function ServiceDetail({ service, contact }: { service: PublicService; co
     {!!service.benefits?.length && <section className="service-section"><div className="container"><Heading title="Support built around your priorities"/><ul className="service-benefit-grid">{service.benefits.map((item,i)=><li key={i}><Check size={20}/><p>{item.text}</p></li>)}</ul></div></section>}
     {!!service.processSteps?.length && <section className="service-section service-pale"><div className="container"><Heading title="How it works"/><ol className="service-process">{service.processSteps.map((step,i)=><li key={i}><span>{String(i+1).padStart(2,"0")}</span><h3>{step.title}</h3><p>{step.description}</p></li>)}</ol></div></section>}
     {!!page.faqs?.length && <section className="service-section"><div className="container service-prose"><Heading title="Your questions, answered"/>{page.faqs.map((faq,i)=><details className="service-faq" key={i}><summary>{faq.question}</summary><p>{faq.answer}</p></details>)}</div></section>}
+    {guides.length > 0 && <section className="service-section service-pale" aria-labelledby="service-related-guides"><div className="container"><div className="service-heading"><h2 id="service-related-guides">Related guides</h2><p>Practical reading for planning your next steps.</p></div><div className="grid gap-6 md:grid-cols-2">{guides.map(guide => <article className="service-content-card" key={guide.slug}><div><h3><Link prefetch={false} href={`/blogs/${guide.slug}`} className="hover:text-blue-700">{guide.title}</Link></h3><p>{guide.excerpt}</p><Link prefetch={false} href={`/blogs/${guide.slug}`} className="service-text-link">Read guide<ArrowRight size={16}/></Link></div></article>)}</div></div></section>}
     <section className="service-section"><div className="container service-final"><Globe2 size={32}/><h2>{page.contactHeading || "Let’s discuss your next step"}</h2><p>{page.contactIntroduction || "Tell us about your store, target market and priorities. Scope, pricing and timing are confirmed with the team."}</p><Link prefetch={false} href={inquiry} className="button button-primary">Discuss this service<ArrowRight size={17}/></Link></div></section>
     <div className="container service-security"><ShieldCheck size={22}/><p><strong>Keep your account secure</strong>Never send passwords, payment card details, one-time codes, or secret keys through this website.</p></div>
   </main>;

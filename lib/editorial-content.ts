@@ -35,3 +35,23 @@ export const getArticle = cache(async (slug: string): Promise<Article | undefine
     return article?.status === "published" && article._status === "published" ? article : undefined;
   }); } catch { await connection(); return undefined; }
 });
+
+export type RelatedGuide = Pick<Article, "slug" | "title" | "excerpt">;
+export const getRelatedGuides = cache(async (slugs: string[]): Promise<RelatedGuide[]> => {
+  if (!slugs.length) return [];
+  if (!process.env.DATABASE_URL) { await connection(); return []; }
+  try { return await readPublicContent(["relatedGuides", ...slugs], async () => {
+    const payload = await getPayload({ config });
+    const result = await payload.find({
+      collection: "articles",
+      where: { and: [published, { slug: { in: slugs } }] },
+      draft: false, depth: 0, limit: slugs.length,
+      select: { slug: true, title: true, excerpt: true, status: true, _status: true },
+    });
+    const bySlug = new Map(result.docs.filter(doc => doc.status === "published" && doc._status === "published").map(doc => [doc.slug, doc]));
+    return slugs.flatMap(slug => {
+      const doc = bySlug.get(slug);
+      return doc ? [{ slug: doc.slug, title: doc.title, excerpt: doc.excerpt }] : [];
+    });
+  }); } catch { await connection(); return []; }
+});

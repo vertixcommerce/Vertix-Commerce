@@ -34,6 +34,12 @@ describe("CMS service layout", () => {
     expect(screen.getByText("Check attributes")).toBeTruthy();
     expect(screen.getByText("How do we start?")).toBeTruthy();
   });
+  it("links only related published guides supplied by the page", () => {
+    const view = render(<ServiceDetail service={service} contact={contact} guides={[{ slug: "ebay-item-specifics-checklist", title: "eBay Item Specifics Checklist", excerpt: "Review product details." }]}/>);
+    expect(screen.getByRole("link", { name: "eBay Item Specifics Checklist" }).getAttribute("href")).toBe("/blogs/ebay-item-specifics-checklist");
+    view.rerender(<ServiceDetail service={service} contact={contact}/>);
+    expect(screen.queryByRole("heading", { name: "Related guides" })).toBeNull();
+  });
 });
 
 

@@ -6,14 +6,21 @@ import { getPublicService, getSiteChrome } from "@/lib/site-content";
 import { ServiceDetail } from "@/components/service-detail";
 import "../../../service-detail.css";
 import { pageMetadata } from "@/lib/page-metadata";
+import { getRelatedGuides } from "@/lib/editorial-content";
+
+const relatedGuideSlugs: Record<string, string[]> = {
+  "ebay-account-management": ["ebay-item-specifics-checklist", "product-listing-optimisation-amazon-ebay-walmart"],
+  "amazon-seller-central-management": ["product-listing-optimisation-amazon-ebay-walmart", "marketplace-fulfilment-vs-seller-fulfilment"],
+  "walmart-seller-central-management": ["product-listing-optimisation-amazon-ebay-walmart", "marketplace-fulfilment-vs-seller-fulfilment"],
+};
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}) {
   const {slug}=await params; const service=await getPublicService(slug);
   return service ? pageMetadata(service.title,service.text,"/services/"+service.slug,service.seo) : { robots: { index: false, follow: false } };
 }
 export default async function ServicePage({params}:{params:Promise<{slug:string}>}) {
   const {slug}=await params; const service=await getPublicService(slug); if(!service)notFound();
-  const chrome = await getSiteChrome();
-  return <><StructuredData data={{"@context":"https://schema.org","@type":"Service",name:service.title,description:service.text,url:absoluteSiteURL(`/services/${service.slug}`),provider:{"@type":"Organization",name:"Vertix Commerce"}}}/><ServiceDetail service={service} contact={chrome.contact}/></>;
+  const [chrome, guides] = await Promise.all([getSiteChrome(), getRelatedGuides(relatedGuideSlugs[slug] || [])]);
+  return <><StructuredData data={{"@context":"https://schema.org","@type":"Service",name:service.title,description:service.text,url:absoluteSiteURL(`/services/${service.slug}`),provider:{"@type":"Organization",name:"Vertix Commerce"}}}/><ServiceDetail service={service} contact={chrome.contact} guides={guides}/></>;
 }
 
 

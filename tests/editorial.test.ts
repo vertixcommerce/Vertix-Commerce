@@ -4,7 +4,7 @@ vi.mock("payload", () => ({ getPayload: vi.fn() }));
 vi.mock("@payload-config", () => ({ default: {} }));
 vi.mock("next/server", () => ({ connection: vi.fn(async () => {}) }));
 import { getPayload } from "payload";
-import { articlePageNumber, getAboutPage, getArticle, getArticles } from "@/lib/editorial-content";
+import { articlePageNumber, getAboutPage, getArticle, getArticles, getRelatedGuides } from "@/lib/editorial-content";
 const cms = { find: vi.fn(), findGlobal: vi.fn() };
 beforeEach(() => { vi.stubEnv("DATABASE_URL", "file:test.db"); vi.mocked(getPayload).mockResolvedValue(cms as never); });
 afterEach(() => { vi.resetAllMocks(); vi.unstubAllEnvs(); });
@@ -28,6 +28,18 @@ describe("CMS editorial retrieval", () => {
   it("returns a published article by its saved slug", async () => {
     cms.find.mockResolvedValue({ docs: [{ title: "Published article", status: "published", _status: "published" }] });
     expect((await getArticle("published-article"))?.title).toBe("Published article");
+  });
+  it("shows related guides in the requested order and excludes drafts", async () => {
+    cms.find.mockResolvedValue({ docs: [
+      { slug: "general", title: "General guide", excerpt: "General details", status: "published", _status: "published" },
+      { slug: "draft", title: "Draft guide", excerpt: "Private details", status: "draft", _status: "draft" },
+      { slug: "specific", title: "Specific guide", excerpt: "Specific details", status: "published", _status: "published" },
+    ] });
+    expect(await getRelatedGuides(["specific", "draft", "general"])).toEqual([
+      { slug: "specific", title: "Specific guide", excerpt: "Specific details" },
+      { slug: "general", title: "General guide", excerpt: "General details" },
+    ]);
+    expect(cms.find).toHaveBeenCalledWith(expect.objectContaining({ collection: "articles", draft: false, limit: 3 }));
   });
   it("fails closed and reports temporary article failure distinctly from an empty library", async () => {
     cms.find.mockRejectedValue(new Error("Private database diagnostic"));
