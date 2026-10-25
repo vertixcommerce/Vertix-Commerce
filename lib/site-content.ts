@@ -39,7 +39,7 @@ function publicService(doc: Service): PublicService {
 export const getSiteChrome = cache(async (): Promise<SiteChrome> => {
   const fallback = { ...defaultChrome, contact: { ...defaultChrome.contact, bookingURL: configuredBookingURL(undefined) } };
   if (!process.env.DATABASE_URL) { await connection(); return fallback; }
-  try { return await readPublicContent(["getSiteChrome"], async () => {
+  try { return await readPublicContent(["getSiteChrome", "legal-copy-v2"], async () => {
     const payload = await getPayload({ config });
     const [settings, categories, serviceResult, assistant, faqs, countries] = await Promise.all([
       payload.findGlobal({ slug: "website-settings", depth: 2 }),
