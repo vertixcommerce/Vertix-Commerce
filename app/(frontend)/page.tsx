@@ -7,7 +7,7 @@ import { getSiteChrome } from "@/lib/site-content";
 import { HomepageBody, HomepageHero } from "@/components/homepage-sections";
 import { ReferenceHomepage } from "@/components/reference-homepage";
 
-const homepageTitle = "Vertix Commerce";
+const homepageTitle = "Vertix Commerce | Ecommerce Store Management";
 const homepageDescription = "Vertix Commerce helps Amazon, eBay, Walmart and Shopify sellers with listings, store operations, content and marketplace support. Explore our services or contact our team.";
 
 const baseMetadata = pageMetadata(homepageTitle, homepageDescription, "/");
