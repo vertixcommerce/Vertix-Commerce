@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 vi.mock("@payload-config",()=>({default:{}}));
 import { ReferenceHomepage } from "@/components/reference-homepage";
 import { LeadForm } from "@/components/lead-form";
@@ -33,6 +33,13 @@ describe("reference-style homepage",()=>{
     expect(screen.getByText("Fictional unit-test quote")).toBeTruthy();
     expect(screen.getByLabelText("4 out of 5 stars")).toBeTruthy();
     expect(screen.getByText("Provided value")).toBeTruthy();
+  });
+  it("leads with approved video reviews and loads YouTube only on play",()=>{
+    const {container}=render(<ReferenceHomepage chrome={chrome({reviews:[{name:"Text reviewer",quote:"Text quote",approved:true},{name:"Video reviewer",quote:"Video quote",approved:true,videoURL:"https://youtu.be/dQw4w9WgXcQ"},{name:"Hidden video",quote:"Hidden",approved:false,videoURL:"https://youtu.be/dQw4w9WgXcQ"}]})}/>);
+    expect([...container.querySelectorAll(".reference-review-card strong")].map(name=>name.textContent)).toEqual(["Video reviewer","Text reviewer"]);
+    expect(container.querySelector("iframe[src*='youtube']")).toBeNull();
+    fireEvent.click(screen.getByRole("button",{name:"Play video: Video review from Video reviewer"}));
+    expect(container.querySelector("iframe")?.getAttribute("src")).toContain("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ");
   });
   it("honors every section visibility control",()=>{
     const {container}=render(<ReferenceHomepage chrome={chrome({servicesEnabled:false,marketsEnabled:false,whyEnabled:false,processEnabled:false,reviewsEnabled:false,contactEnabled:false,faqEnabled:false,blogEnabled:false})}/>);

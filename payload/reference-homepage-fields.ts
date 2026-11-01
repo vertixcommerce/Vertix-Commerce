@@ -1,6 +1,7 @@
 import type { CollapsibleField, Field } from "payload";
 import { imageFields } from "./homepage-fields";
 import { safeURL } from "../lib/public-config";
+import { youtubeVideo } from "../lib/youtube";
 
 const whyImageFields = imageFields().map(field => field.type === "row" ? {
   ...field, fields: field.fields.map(child => child.type === "select" ? { ...child, enumName: `ref_home_why_${child.name}` } : child),
@@ -52,7 +53,9 @@ const sections: CollapsibleField[] = [
       { name: "reviews", label: "Client review cards", type: "array", labels: { singular: "Client review", plural: "Client reviews" }, maxRows: 12, admin: { description: "Click Add Client review, enter the name and feedback, then approve it only after permission is obtained. Drag rows to reorder; delete a row to remove it." }, fields: [
         { name: "approved", label: "Permission obtained and review approved", type: "checkbox", defaultValue: false },
         { name: "name", label: "Public client name", type: "text", required: true },
-        { name: "quote", type: "textarea", required: true }, { name: "country", type: "text" },
+        { name: "quote", type: "textarea", required: true },
+        { name: "videoURL", label: "YouTube video review (optional)", type: "text", validate: (value: unknown) => !value || youtubeVideo(value) ? true : "Paste a YouTube video link, e.g. https://youtu.be/… or https://www.youtube.com/shorts/…", admin: { description: "Upload the video to YouTube as Public or Unlisted, then paste its link. Video reviews appear first, with a large player." } },
+        { name: "country", type: "text" },
         { name: "portrait", type: "upload", relationTo: "media" },
         { name: "rating", type: "number", min: 1, max: 5 },
       ] },

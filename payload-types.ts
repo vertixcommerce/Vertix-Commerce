@@ -71,12 +71,12 @@ export interface Config {
     'service-categories': ServiceCategory;
     services: Service;
     countries: Country;
-    knowledge: Knowledge;
     faqs: Faq;
-    leads: Lead;
-    conversations: Conversation;
     media: Media;
     articles: Article;
+    knowledge: Knowledge;
+    leads: Lead;
+    conversations: Conversation;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -88,12 +88,12 @@ export interface Config {
     'service-categories': ServiceCategoriesSelect<false> | ServiceCategoriesSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     countries: CountriesSelect<false> | CountriesSelect<true>;
-    knowledge: KnowledgeSelect<false> | KnowledgeSelect<true>;
     faqs: FaqsSelect<false> | FaqsSelect<true>;
-    leads: LeadsSelect<false> | LeadsSelect<true>;
-    conversations: ConversationsSelect<false> | ConversationsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
+    knowledge: KnowledgeSelect<false> | KnowledgeSelect<true>;
+    leads: LeadsSelect<false> | LeadsSelect<true>;
+    conversations: ConversationsSelect<false> | ConversationsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -142,7 +142,7 @@ export interface UserAuthOperations {
   };
 }
 /**
- * Manage team access. Owners assign roles; each member can update their own account.
+ * Owners manage other accounts and force-unlock access. Each member can update their own account.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
@@ -151,7 +151,7 @@ export interface User {
   id: number;
   displayName: string;
   /**
-   * Owner: all controls and roles. Administrator: settings and team. Editor: content. Sales: inquiries. Support: conversations. Viewer: basic access.
+   * Owner: all controls and roles. Administrator: settings and team view. Editor: content. Sales: inquiries. Support: conversations. Viewer: basic access.
    */
   roles: ('owner' | 'administrator' | 'editor' | 'sales' | 'support' | 'viewer')[];
   updatedAt: string;
@@ -500,6 +500,94 @@ export interface Country {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Keep customer answers short, accurate, and easy to understand.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faqs".
+ */
+export interface Faq {
+  id: number;
+  question: string;
+  answer: string;
+  locale: 'en' | 'de';
+  /**
+   * Optional. Leave empty for a general website FAQ.
+   */
+  service?: (number | null) | Service;
+  /**
+   * Lower numbers appear first. Use 10, 20, 30 to leave room between items.
+   */
+  displayOrder?: number | null;
+  /**
+   * Publish only when the content is ready for visitors.
+   */
+  status: 'draft' | 'published';
+  assistantApproved?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Add as many articles as needed. Drafts are private; set Publication status to Published and use Publish to show an article on Blogs.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles".
+ */
+export interface Article {
+  id: number;
+  title: string;
+  /**
+   * Publish only when the content is ready for visitors.
+   */
+  status: 'draft' | 'published';
+  /**
+   * Lowercase words separated by hyphens, for example ebay-account-management. Changing this changes the page address.
+   */
+  slug: string;
+  excerpt: string;
+  /**
+   * Optional. Upload a responsive website image or choose from Media library.
+   */
+  coverImage?: (number | null) | Media;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  authorName?: string | null;
+  /**
+   * Filled on first publication if empty. Sorts newest first; this is a displayed date, not an automatic publishing scheduler.
+   */
+  publishedAt?: string | null;
+  seo?: {
+    /**
+     * Up to 70 characters. Use a clear, descriptive title.
+     */
+    title?: string | null;
+    /**
+     * A short summary for search results, up to 170 characters.
+     */
+    description?: string | null;
+    /**
+     * Optional preferred URL when the same content appears elsewhere.
+     */
+    canonicalURL?: string | null;
+    noIndex?: boolean | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * The assistant can use an article only when it is both approved and published.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -528,33 +616,6 @@ export interface Knowledge {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * Keep customer answers short, accurate, and easy to understand.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "faqs".
- */
-export interface Faq {
-  id: number;
-  question: string;
-  answer: string;
-  locale: 'en' | 'de';
-  /**
-   * Optional. Leave empty for a general website FAQ.
-   */
-  service?: (number | null) | Service;
-  /**
-   * Lower numbers appear first. Use 10, 20, 30 to leave room between items.
-   */
-  displayOrder?: number | null;
-  /**
-   * Publish only when the content is ready for visitors.
-   */
-  status: 'draft' | 'published';
-  assistantApproved?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * Review an inquiry, add internal notes, and update its follow-up status.
@@ -621,67 +682,6 @@ export interface Conversation {
   createdAt: string;
 }
 /**
- * Add as many articles as needed. Drafts are private; set Publication status to Published and use Publish to show an article on Blogs.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles".
- */
-export interface Article {
-  id: number;
-  title: string;
-  /**
-   * Publish only when the content is ready for visitors.
-   */
-  status: 'draft' | 'published';
-  /**
-   * Lowercase words separated by hyphens, for example ebay-account-management. Changing this changes the page address.
-   */
-  slug: string;
-  excerpt: string;
-  /**
-   * Optional. Upload a responsive website image or choose from Media library.
-   */
-  coverImage?: (number | null) | Media;
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  authorName?: string | null;
-  /**
-   * Filled on first publication if empty. Sorts newest first; this is a displayed date, not an automatic publishing scheduler.
-   */
-  publishedAt?: string | null;
-  seo?: {
-    /**
-     * Up to 70 characters. Use a clear, descriptive title.
-     */
-    title?: string | null;
-    /**
-     * A short summary for search results, up to 170 characters.
-     */
-    description?: string | null;
-    /**
-     * Optional preferred URL when the same content appears elsewhere.
-     */
-    canonicalURL?: string | null;
-    noIndex?: boolean | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -722,20 +722,8 @@ export interface PayloadLockedDocument {
         value: number | Country;
       } | null)
     | ({
-        relationTo: 'knowledge';
-        value: number | Knowledge;
-      } | null)
-    | ({
         relationTo: 'faqs';
         value: number | Faq;
-      } | null)
-    | ({
-        relationTo: 'leads';
-        value: number | Lead;
-      } | null)
-    | ({
-        relationTo: 'conversations';
-        value: number | Conversation;
       } | null)
     | ({
         relationTo: 'media';
@@ -744,6 +732,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'articles';
         value: number | Article;
+      } | null)
+    | ({
+        relationTo: 'knowledge';
+        value: number | Knowledge;
+      } | null)
+    | ({
+        relationTo: 'leads';
+        value: number | Lead;
+      } | null)
+    | ({
+        relationTo: 'conversations';
+        value: number | Conversation;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -959,21 +959,6 @@ export interface CountriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "knowledge_select".
- */
-export interface KnowledgeSelect<T extends boolean = true> {
-  title?: T;
-  status?: T;
-  content?: T;
-  locale?: T;
-  tags?: T;
-  approved?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "faqs_select".
  */
 export interface FaqsSelect<T extends boolean = true> {
@@ -984,52 +969,6 @@ export interface FaqsSelect<T extends boolean = true> {
   displayOrder?: T;
   status?: T;
   assistantApproved?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "leads_select".
- */
-export interface LeadsSelect<T extends boolean = true> {
-  submissionKey?: T;
-  leadStatus?: T;
-  name?: T;
-  email?: T;
-  whatsapp?: T;
-  country?: T;
-  service?: T;
-  requirements?: T;
-  internalNotes?: T;
-  consent?: T;
-  consentedAt?: T;
-  source?: T;
-  notificationStatus?: T;
-  retentionExpiresAt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "conversations_select".
- */
-export interface ConversationsSelect<T extends boolean = true> {
-  sessionId?: T;
-  followUpRequired?: T;
-  messages?:
-    | T
-    | {
-        role?: T;
-        sentAt?: T;
-        content?: T;
-        id?: T;
-      };
-  locale?: T;
-  mode?: T;
-  storageConsent?: T;
-  consentedAt?: T;
-  replyToVisitor?: T;
-  retentionExpiresAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1112,6 +1051,67 @@ export interface ArticlesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "knowledge_select".
+ */
+export interface KnowledgeSelect<T extends boolean = true> {
+  title?: T;
+  status?: T;
+  content?: T;
+  locale?: T;
+  tags?: T;
+  approved?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads_select".
+ */
+export interface LeadsSelect<T extends boolean = true> {
+  submissionKey?: T;
+  leadStatus?: T;
+  name?: T;
+  email?: T;
+  whatsapp?: T;
+  country?: T;
+  service?: T;
+  requirements?: T;
+  internalNotes?: T;
+  consent?: T;
+  consentedAt?: T;
+  source?: T;
+  notificationStatus?: T;
+  retentionExpiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations_select".
+ */
+export interface ConversationsSelect<T extends boolean = true> {
+  sessionId?: T;
+  followUpRequired?: T;
+  messages?:
+    | T
+    | {
+        role?: T;
+        sentAt?: T;
+        content?: T;
+        id?: T;
+      };
+  locale?: T;
+  mode?: T;
+  storageConsent?: T;
+  consentedAt?: T;
+  replyToVisitor?: T;
+  retentionExpiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1390,6 +1390,10 @@ export interface WebsiteSetting {
           approved?: boolean | null;
           name: string;
           quote: string;
+          /**
+           * Upload the video to YouTube as Public or Unlisted, then paste its link. Video reviews appear first, with a large player.
+           */
+          videoURL?: string | null;
           country?: string | null;
           portrait?: (number | null) | Media;
           rating?: number | null;
@@ -1882,6 +1886,7 @@ export interface WebsiteSettingsSelect<T extends boolean = true> {
               approved?: T;
               name?: T;
               quote?: T;
+              videoURL?: T;
               country?: T;
               portrait?: T;
               rating?: T;

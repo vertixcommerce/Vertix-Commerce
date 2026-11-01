@@ -99,6 +99,16 @@
 .reference-review-card blockquote { font-size: 12px; line-height: 1.55; color: #4e5b6c; }
 .reference-review-card figcaption { display: flex; flex-direction: column; font-size: 10px; margin-top: 12px; color: #63768a; }
 .reference-review-card figcaption strong { color: #152b44; }
+.reference-review-card-video { grid-column: 1 / -1; align-items: center; gap: 28px; padding: 20px; }
+.reference-review-card-video blockquote { font-size: 16px; line-height: 1.6; color: #24384f; }
+.reference-review-card-video figcaption { font-size: 12px; }
+.reference-review-video { flex: 0 0 min(58%, 620px); aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #0b1a2c; }
+.reference-review-video-vertical { flex-basis: min(34%, 300px); aspect-ratio: 9 / 16; max-height: 540px; }
+.reference-review-video iframe, .reference-review-video button { display: block; width: 100%; height: 100%; border: 0; padding: 0; }
+.reference-review-video button { position: relative; cursor: pointer; background: #0b1a2c; }
+.reference-review-video button img { width: 100%; height: 100%; object-fit: cover; opacity: .9; transition: opacity .2s; }
+.reference-review-video button:hover img, .reference-review-video button:focus-visible img { opacity: 1; }
+.reference-review-play { position: absolute; inset: 50% auto auto 50%; translate: -50% -50%; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: #e62117; color: #fff; box-shadow: 0 6px 20px #0006; }
 .reference-review-empty { display: flex; align-items: center; gap: 12px; padding: 18px 22px; background: #f8fbfe; border: 1px solid #e2ecf5; border-radius: 9px; color: #596d81; font-size: 13px; }
 .reference-review-empty svg { color: #8eaecb; }
 .reference-discuss { background: linear-gradient(120deg, #f1f6fc, #ffffff); padding: 28px 0; color: #081e38; border-top: 1px solid #e4edf5; }
@@ -225,6 +235,9 @@
   .reference-timeline li { padding-right: 0; gap: 10px; }
   .reference-step-arrow { display: none; }
   .reference-review-grid { grid-template-columns: 1fr; }
+  .reference-review-card-video { flex-direction: column; align-items: stretch; gap: 16px; padding: 14px; }
+  .reference-review-video { flex-basis: auto; width: 100%; }
+  .reference-review-video-vertical { width: min(100%, 300px); align-self: center; }
   .reference-discuss-grid { grid-template-columns: 1fr; gap: 25px; }
   .reference-discuss h2 { font-size: 30px; }
   .reference-contact-notes { gap: 15px; margin-top: 22px; }

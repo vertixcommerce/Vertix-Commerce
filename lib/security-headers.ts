@@ -7,7 +7,7 @@ export function contentSecurityPolicy(development = false) {
     `script-src 'self' 'unsafe-inline'${development ? " 'unsafe-eval'" : ""}`,
     "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob: https:",
     "font-src 'self' data:", `connect-src 'self'${development ? " ws: wss:" : ""}`,
-    "worker-src 'self' blob:", "frame-src https://calendly.com",
+    "worker-src 'self' blob:", "frame-src https://calendly.com https://www.youtube-nocookie.com",
     ...(!development ? ["upgrade-insecure-requests"] : []),
   ].join("; ");
 }
