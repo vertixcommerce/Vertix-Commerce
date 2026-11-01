@@ -1,6 +1,8 @@
 import React from "react";
 import { safeURL } from "@/lib/public-config";
-type Node = { type?: string; text?: string; tag?: string; format?: number; children?: Node[]; fields?: { url?: unknown } };
+import { publicImage } from "@/lib/homepage";
+import type { Media } from "@/payload-types";
+type Node = { type?: string; text?: string; tag?: string; format?: number; children?: Node[]; fields?: { url?: unknown }; value?: number | Media | null };
 export function RichContent({ data }: { data: unknown }) {
   if (!data || typeof data !== "object" || !("root" in data)) return null;
   let visited = 0;
@@ -19,6 +21,8 @@ export function RichContent({ data }: { data: unknown }) {
     if (node.type === "linebreak") return <br key={index}/>;
     if (node.type === "link" || node.type === "autolink") { const url = safeURL(node.fields?.url, true); return url ? <a key={index} href={url} className="text-blue-700 underline" rel="noreferrer">{children}</a> : <React.Fragment key={index}>{children}</React.Fragment>; }
     if (node.type === "quote") return <blockquote key={index} className="my-5 border-l-4 border-blue-500 pl-5">{children}</blockquote>;
+    // Inline images keep their natural shape so screenshots are never cropped.
+    if (node.type === "upload") { const image = publicImage(node.value); const caption = typeof node.value === "object" ? node.value?.caption : null; return image ? <figure key={index} className="my-8"><img src={image.src} srcSet={image.srcSet} sizes="(min-width: 1024px) 896px, 100vw" width={image.width} height={image.height} alt={image.alt} loading="lazy" decoding="async" className="h-auto w-full rounded-2xl border border-slate-200"/>{caption && <figcaption className="mt-3 text-center text-sm text-slate-500">{caption}</figcaption>}</figure> : null; }
     if (node.type === "paragraph") return <p key={index} className="mb-5 leading-8">{children}</p>;
     return <React.Fragment key={index}>{children}</React.Fragment>;
   }
