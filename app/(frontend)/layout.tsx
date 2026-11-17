@@ -1,4 +1,5 @@
 import { absoluteSiteURL, getSiteOrigin } from "@/lib/site-url";
+import { organizationSchema } from "@/lib/seo";
 import { StructuredData } from "@/components/structured-data";
 import type { Metadata } from "next";
 import "../globals.css";
@@ -18,10 +19,10 @@ export const metadata: Metadata = {
     icon: [{ url: absoluteSiteURL("/icon.png"), type: "image/png", sizes: "192x192" }],
     apple: [{ url: absoluteSiteURL("/apple-touch-icon.png"), type: "image/png", sizes: "180x180" }],
   },
-  title: { default: "Vertix Commerce | Commerce Services", template: "%s | Vertix Commerce" },
-  description: "Explore Vertix Commerce services and discuss your business requirements with our team."
+  title: { default: "Vertix Commerce | Ecommerce Management Services", template: "%s | Vertix Commerce" },
+  description: "Ecommerce management services for Amazon, eBay, Walmart and Shopify sellers in the USA, UK and Australia."
 };
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const chrome = await getSiteChrome();
-  return <html lang="en"><body><StructuredData data={{"@context":"https://schema.org","@type":"Organization",name:"Vertix Commerce",url:getSiteOrigin(),logo:absoluteSiteURL("/icon.png"),email:"vertixcommerce@gmail.com"}}/><Header groups={chrome.groups.map(group => ({ name: group.name, slug: group.slug, services: group.services.map(service => ({ slug: service.slug, title: service.title })) }))} servicesLabel={chrome.servicesLabel} aboutMenuLabel={chrome.aboutMenuLabel} hasFAQs={homepageHasFAQs(chrome.homepage, chrome.faqs.length)} extraLinks={chrome.homepage.referenceHomepage?.extraNavigation || []}/>{children}<ContactDockLoader config={chrome.assistant} contact={chrome.contact} services={chrome.services.map(service=>({slug:service.slug,title:service.title}))}/><SiteFooter chrome={chrome}/></body></html>;
+  return <html lang="en"><body><StructuredData data={organizationSchema(chrome.contact.email || "vertixcommerce@gmail.com", chrome.socialLinks.map(link => link.url))}/><Header groups={chrome.groups.map(group => ({ name: group.name, slug: group.slug, services: group.services.map(service => ({ slug: service.slug, title: service.title })) }))} servicesLabel={chrome.servicesLabel} aboutMenuLabel={chrome.aboutMenuLabel} hasFAQs={homepageHasFAQs(chrome.homepage, chrome.faqs.length)} extraLinks={chrome.homepage.referenceHomepage?.extraNavigation || []}/>{children}<ContactDockLoader config={chrome.assistant} contact={chrome.contact} services={chrome.services.map(service=>({slug:service.slug,title:service.title}))}/><SiteFooter chrome={chrome}/></body></html>;
 }

@@ -2,15 +2,15 @@ import Link from "next/link";
 import { getSiteChrome } from "@/lib/site-content";
 import { pageMetadata } from "@/lib/page-metadata";
 
-export const metadata = pageMetadata("Services", "Explore the services available from Vertix Commerce and find support for your business.", "/services");
+export const metadata = pageMetadata("Ecommerce Management Services for Amazon, eBay, Walmart & Shopify", "Compare Vertix Commerce ecommerce management services: Amazon, eBay, Walmart and Shopify account management, listings, advertising and store operations.", "/services");
 
 export default async function Services() {
   const { services } = await getSiteChrome();
   return <main>
     <section className="bg-blue-50 py-14 md:py-20"><div className="container">
       <p className="eyebrow">Vertix Commerce</p>
-      <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">Our services</h1>
-      <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">Explore our services and find the support that fits your business.</p>
+      <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">Ecommerce management services</h1>
+      <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">Account management, listings and day-to-day store operations for Amazon, eBay, Walmart and Shopify sellers. Choose one marketplace or combine several under a single scope.</p>
     </div></section>
     <section className="py-14 md:py-20"><div className="container">
       {services.length ? <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{services.map(service =>
