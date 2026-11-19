@@ -21,3 +21,32 @@ describe("rich content images",()=>{
     expect(screen.getByText("Before")).toBeTruthy();
   });
 });
+
+describe("rich content tables and lists",()=>{
+  it("renders Lexical table cells as an accessible HTML table",()=>{
+    const tableDoc = { root: { children: [{ type: "table", children: [
+      { type: "tablerow", children: [
+        { type: "tablecell", headerState: 1, children: [{ type: "paragraph", children: [{ text: "Factor" }] }] },
+        { type: "tablecell", headerState: 1, children: [{ type: "paragraph", children: [{ text: "eBay" }] }] },
+      ] },
+      { type: "tablerow", children: [
+        { type: "tablecell", headerState: 0, children: [{ type: "paragraph", children: [{ text: "Marketplace scale" }] }] },
+        { type: "tablecell", headerState: 0, children: [{ type: "paragraph", children: [{ text: "$79.6bn GMV" }] }] },
+      ] },
+    ] }] } };
+    render(<RichContent data={tableDoc}/>);
+    expect(screen.getByRole("table")).toBeTruthy();
+    expect(screen.getByRole("columnheader", { name: "Factor" })).toBeTruthy();
+    expect(screen.getByRole("cell", { name: "$79.6bn GMV" })).toBeTruthy();
+  });
+
+  it("marks list items for compact spacing and removes nested paragraph margins",()=>{
+    const listDoc = { root: { children: [{ type: "list", tag: "ul", children: [
+      { type: "listitem", children: [{ type: "paragraph", children: [{ text: "First point" }] }] },
+      { type: "listitem", children: [{ type: "paragraph", children: [{ text: "Second point" }] }] },
+    ] }] } };
+    const { container } = render(<RichContent data={listDoc}/>);
+    expect(container.querySelector("ul")?.className).toContain("space-y-1");
+    expect(container.querySelector("li")?.className).toContain("blog-list-item");
+  });
+});

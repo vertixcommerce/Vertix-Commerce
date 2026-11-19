@@ -2,7 +2,7 @@ import React from "react";
 import { safeURL } from "@/lib/public-config";
 import { publicImage } from "@/lib/homepage";
 import type { Media } from "@/payload-types";
-type Node = { type?: string; text?: string; tag?: string; format?: number; children?: Node[]; fields?: { url?: unknown }; value?: number | Media | null };
+type Node = { type?: string; text?: string; tag?: string; format?: number; headerState?: number; colSpan?: number; rowSpan?: number; children?: Node[]; fields?: { url?: unknown }; value?: number | Media | null };
 export function RichContent({ data }: { data: unknown }) {
   if (!data || typeof data !== "object" || !("root" in data)) return null;
   let visited = 0;
@@ -16,8 +16,14 @@ export function RichContent({ data }: { data: unknown }) {
       return <React.Fragment key={index}>{text}</React.Fragment>;
     }
     if (node.type === "heading") { const Heading = (["h2", "h3", "h4"].includes(node.tag || "") ? node.tag : "h2") as "h2" | "h3" | "h4"; return <Heading key={index} className="mb-3 mt-7 text-2xl font-bold">{children}</Heading>; }
-    if (node.type === "list") return node.tag === "ol" ? <ol key={index} className="my-5 list-decimal space-y-2 pl-6">{children}</ol> : <ul key={index} className="my-5 list-disc space-y-2 pl-6">{children}</ul>;
-    if (node.type === "listitem") return <li key={index}>{children}</li>;
+    if (node.type === "list") return node.tag === "ol" ? <ol key={index} className="my-5 list-decimal space-y-1 pl-6">{children}</ol> : <ul key={index} className="my-5 list-disc space-y-1 pl-6">{children}</ul>;
+    if (node.type === "listitem") return <li key={index} className="blog-list-item">{children}</li>;
+    if (node.type === "table") return <div key={index} className="blog-table-wrap" role="region" aria-label="Article table" tabIndex={0}><table className="blog-data-table"><tbody>{children}</tbody></table></div>;
+    if (node.type === "tablerow") return <tr key={index}>{children}</tr>;
+    if (node.type === "tablecell") {
+      const spans = { ...(Number.isInteger(node.colSpan) && node.colSpan! > 1 && node.colSpan! <= 100 ? { colSpan: node.colSpan } : {}), ...(Number.isInteger(node.rowSpan) && node.rowSpan! > 1 && node.rowSpan! <= 100 ? { rowSpan: node.rowSpan } : {}) };
+      return node.headerState ? <th key={index} scope="col" {...spans}>{children}</th> : <td key={index} {...spans}>{children}</td>;
+    }
     if (node.type === "linebreak") return <br key={index}/>;
     if (node.type === "link" || node.type === "autolink") { const url = safeURL(node.fields?.url, true); return url ? <a key={index} href={url} className="text-blue-700 underline" rel="noreferrer">{children}</a> : <React.Fragment key={index}>{children}</React.Fragment>; }
     if (node.type === "quote") return <blockquote key={index} className="my-5 border-l-4 border-blue-500 pl-5">{children}</blockquote>;

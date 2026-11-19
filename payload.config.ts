@@ -7,7 +7,7 @@ import { s3Storage } from "@payloadcms/storage-s3";
 import { Media } from "./payload/collections/Media";
 import { Articles } from "./payload/collections/Articles";
 import { AboutPage } from "./payload/globals/AboutPage";
-import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { EXPERIMENTAL_TableFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 import path from "node:path";
@@ -52,7 +52,7 @@ export default buildConfig({
     },
   })],
   globals:[WebsiteSettings,AssistantSettings,AboutPage].map(withPublicGlobalCache),
-  editor:lexicalEditor(),
+  editor:lexicalEditor({features:({defaultFeatures})=>[...defaultFeatures,EXPERIMENTAL_TableFeature()]}),
   ...(process.env.RESEND_API_KEY?{email:resendAdapter({defaultFromAddress:process.env.RESEND_FROM_EMAIL_ADDRESS||"notifications@vertixcommerce.com",defaultFromName:"Vertix Commerce",apiKey:process.env.RESEND_API_KEY})}:{}),
   secret:process.env.PAYLOAD_SECRET||"development-only-secret-change-before-production",
   db:process.env.DATABASE_URL?.startsWith("file:")

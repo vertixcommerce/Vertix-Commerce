@@ -4,7 +4,7 @@ import { withPayload } from "@payloadcms/next/withPayload";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  experimental: { globalNotFound: true, serverActions: { bodySizeLimit: "1mb" } },
+  experimental: { agentUpgrade: "security", globalNotFound: true, serverActions: { bodySizeLimit: "1mb" } },
   async redirects() {
     return ["www\\.vertixcommerce\\.com", "vertix-commerce\\.vercel\\.app"].map(host => ({
       source: "/:path*", has: [{ type: "host" as const, value: host }],
